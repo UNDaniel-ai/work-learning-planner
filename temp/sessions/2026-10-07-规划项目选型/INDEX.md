@@ -3,8 +3,8 @@
 ## 当前状态
 
 - 当前路由：Route C（多方案研究与后续产品化）
-- 当前阶段：Stage 1 - Requirements Alignment / GitHub Research
-- 当前主文档：[requirements-alignment.md](./requirements-alignment.md)
+- 当前阶段：Stage 2 - Technical Design
+- 当前主文档：[design.md](./design.md)
 - 是否允许编码：否
 - 是否允许宣告完成：否
 
@@ -17,12 +17,12 @@
 - [x] 完成工作流入口与复杂度判断
 - [x] 完成 GitHub 候选项目调研
 - [x] 形成需求缺口与验收标准
-- [ ] 用户确认需求对齐
-- [ ] 进入设计方案比较
+- [x] 用户确认需求对齐
+- [x] 进入设计方案比较
 - [ ] 用户确认设计方案
 - [ ] 形成实现计划
 - [ ] 用户确认开始编码
 
 ## 下一步唯一允许动作
 
-向用户呈现调研结论并发起 Stage 1 → Stage 2 的显式确认。在用户确认进入设计阶段前，不创建产品代码。
+完成三条路线的方案比较、架构图、数据流图、设计挑战和 MVP 边界，并向用户发起 Stage 2 → Stage 3 的显式确认。在用户确认进入实现计划阶段前，不创建产品代码。

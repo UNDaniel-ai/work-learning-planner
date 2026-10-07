@@ -6,11 +6,11 @@
 
 ## 当前状态
 
-- 当前阶段：Stage 1 - Requirements Alignment / GitHub Research
+- 当前阶段：Stage 2 - Technical Design
 - 当前路线：Route C
 - 当前推荐方向：`Vikunja` 作为任务底座，叠加个人工作学习规划层
 - 是否允许编码：否
-- 下一步：确认需求对齐后进入技术设计
+- 下一步：确认技术设计后进入实现计划
 
 ## 目标
 
