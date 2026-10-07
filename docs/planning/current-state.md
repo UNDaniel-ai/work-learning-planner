@@ -9,6 +9,7 @@
 - 确认项目规划、设计、实现步骤和复盘都要留在仓库中。
 - 初始化本地 Git 仓库，默认分支为 `main`。
 - 建立项目级 README、路线图、状态记录和决策日志。
+- 将项目正式目录迁移到 `/Users/u.ndaniel/Developer/work-learning-planner`。
 
 ### 当前判断
 
