@@ -161,7 +161,7 @@
 
 ### 步骤 2：建立配置、环境变量与健康检查
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：步骤 1
 - **前置输入**：
@@ -177,28 +177,31 @@
   - 配置边界较小，适合主会话执行。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] 缺失必需环境变量时配置测试失败。
-  - [ ] 健康检查路由不存在时 API 测试失败。
+  - [x] 缺失必需环境变量时配置测试失败。
+  - [x] 健康检查路由不存在时 API 测试失败。
 - **Verify RED**：
-  - [ ] `pnpm test src/lib/config.test.ts` 先失败。
+  - [x] `pnpm test src/lib/config.test.ts src/app/api/health/route.test.ts` 先失败。
 - **Minimal Implementation**：
-  - [ ] 用 Zod 校验环境变量。
-  - [ ] 增加 `.env.example`，包含 `DATABASE_URL`、`VIKUNJA_BASE_URL`、`VIKUNJA_API_TOKEN`。
-  - [ ] 增加 `/api/health`。
+  - [x] 用 Zod 校验环境变量。
+  - [x] 增加 `.env.example`，包含 `DATABASE_URL`、`VIKUNJA_BASE_URL`、`VIKUNJA_API_TOKEN`。
+  - [x] 增加 `/api/health`。
 - **Verify GREEN**：
-  - [ ] 配置测试通过。
-  - [ ] 健康检查返回应用状态。
+  - [x] 配置测试通过。
+  - [x] 健康检查返回应用状态。
 - **验证命令**：
-  - [ ] `pnpm test src/lib/config.test.ts`
-  - [ ] `pnpm typecheck`
+  - [x] `pnpm test src/lib/config.test.ts src/app/api/health/route.test.ts`
+  - [x] `pnpm lint`
+  - [x] `pnpm typecheck`
+  - [x] `pnpm test`
+  - [x] `pnpm build`
 - **预期结果**：
-  - [ ] 应用能显式报告缺失或非法配置。
-  - [ ] 本地开发者可以从 `.env.example` 看出需要配置什么。
+  - [x] 应用能显式报告缺失或非法配置。
+  - [x] 本地开发者可以从 `.env.example` 看出需要配置什么。
 - **Refactor**：
-  - [ ] 确保配置读取集中在 `src/lib/config.ts`。
+  - [x] 确保配置读取集中在 `src/lib/config.ts`。
 - **Step Acceptance**：
-  - [ ] `.env.example` 不包含真实密钥。
-  - [ ] 配置错误不会在运行中静默失败。
+  - [x] `.env.example` 不包含真实密钥。
+  - [x] 配置错误不会在运行中静默失败。
 - **并行边界**：必须在 Vikunja 适配器和数据库步骤前完成。
 - **TDD 例外**：无。
 

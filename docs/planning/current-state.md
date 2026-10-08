@@ -11,22 +11,23 @@
 - 明确默认技术栈候选：Next.js + TypeScript + SQLite + Drizzle + Vitest + Playwright。
 - 用户明确要求后续实现必须注意 TDD。
 - 完成步骤 1：建立 Next.js / TypeScript 应用脚手架与基础质量门。
+- 完成步骤 2：配置、环境变量与健康检查。
 
 ### 当前阶段
 
 - Stage 4 - TDD Execution
 - 当前执行文档：`temp/sessions/2026-10-07-规划项目选型/progress-details.md`
-- 下一步：步骤 2 - 建立配置、环境变量与健康检查。
+- 下一步：步骤 3 - 定义领域模型与纯规则。
 
 ### 当前阻塞
 
-- 尚未建立 `.env.example` 和配置校验。
+- 尚未定义本地规划领域模型。
 - 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
 - Stage 4 开始后，除显式 `TDD 例外` 外，每个产品步骤必须记录 RED/GREEN 证据。
 
 ### 下一步唯一允许动作
 
-继续按 `implementation-plan.md` 执行步骤 2。步骤 2 需要先写配置测试并验证 RED，再实现最小配置读取和健康检查。
+继续按 `implementation-plan.md` 执行步骤 3。步骤 3 需要先写领域规则测试并验证 RED，再实现最小领域类型和纯规则。
 
 ## 2026-10-07
 

@@ -91,3 +91,61 @@
 
 - 将 `tsconfig.tsbuildinfo` 加入 `.gitignore`，避免提交本地增量编译缓存。
 - 步骤 1 完成后未做业务逻辑重构。
+
+## 步骤 2：建立配置、环境变量与健康检查
+
+### Step Contract
+
+- 前置输入：
+  - 应用骨架已存在。
+  - `.env` 文件不会提交到 Git。
+- TDD 分类：严格 TDD。
+- 目标验证：
+  - `pnpm test src/lib/config.test.ts src/app/api/health/route.test.ts`
+  - `pnpm lint`
+  - `pnpm typecheck`
+  - `pnpm test`
+  - `pnpm build`
+
+### Verify RED
+
+- 先写测试：
+  - `src/lib/config.test.ts`
+  - `src/app/api/health/route.test.ts`
+- `pnpm test src/lib/config.test.ts src/app/api/health/route.test.ts`
+  - 结果：失败，exit code 1。
+  - 失败原因：无法解析 `./config` 和 `./route`，目标实现文件尚不存在。
+- RED 结论：失败原因指向当前切片，满足 TDD RED。
+
+### Minimal Implementation
+
+- 新增 `.env.example`，包含 `DATABASE_URL`、`VIKUNJA_BASE_URL`、`VIKUNJA_API_TOKEN`。
+- 新增 `src/lib/config.ts`：
+  - 使用 Zod 校验环境变量。
+  - 缺少 `DATABASE_URL` 时抛出包含字段名的错误。
+  - 将空字符串 Vikunja 配置规范化为 `undefined`。
+- 新增 `src/app/api/health/route.ts`：
+  - 返回应用健康状态。
+  - 返回 Vikunja 是否已同时配置 base URL 与 token。
+
+### Verify GREEN
+
+- `pnpm test src/lib/config.test.ts src/app/api/health/route.test.ts`
+  - 结果：通过，exit code 0，2 个测试文件、3 个测试通过。
+- 第一次回归：
+  - `pnpm typecheck`：通过。
+  - `pnpm test`：通过。
+  - `pnpm build`：通过。
+  - `pnpm lint`：失败，原因是测试 helper 使用变量名 `module` 触发 Next lint 规则。
+- 修复：
+  - 将测试 helper 变量名从 `module` 改为 `configModule`。
+- 最终回归：
+  - `pnpm lint`：通过，exit code 0。
+  - `pnpm typecheck`：通过，exit code 0。
+  - `pnpm test`：通过，exit code 0，3 个测试文件、4 个测试通过。
+  - `pnpm build`：通过，exit code 0，生成 `/` 和 `/api/health`。
+
+### Refactor After Green
+
+- 将测试 helper 命名改为 `configModule`，消除 lint 风险。
+- 未做额外业务重构。
