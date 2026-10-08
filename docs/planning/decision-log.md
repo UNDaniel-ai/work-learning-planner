@@ -92,3 +92,32 @@ MVP 默认采用：
 
 - Stage 4 开始前需要核查当时稳定版本和脚手架命令。
 - 如果用户要求更强离线能力或桌面端体验，技术栈需要重新评估。
+
+## ADR-005：产品实现采用严格 TDD
+
+日期：2026-10-08
+状态：已确认
+
+### 背景
+
+用户明确要求后续实现需要注意 TDD。项目计划本身已经包含 `Verify RED` / `Verify GREEN` 字段，但需要提升为 Stage 4 的硬性执行约束。
+
+### 决策
+
+除纯文档、机械脚手架、配置初始化等明确记录 `TDD 例外` 的步骤外，所有产品行为变更必须遵循：
+
+```text
+Failing Test
+  -> Verify RED
+  -> Minimal Implementation
+  -> Verify GREEN
+  -> Refactor After Green
+```
+
+每一步的 RED/GREEN 证据必须记录到 `progress-details.md`，并在步骤关闭时同步勾选 `implementation-plan.md` 中对应的验证项。
+
+### 影响
+
+- 不允许先写生产代码再补测试。
+- 不允许用宽泛的全量测试通过替代目标测试从 RED 到 GREEN 的证据。
+- 若某步骤不适合 TDD，必须写明例外原因、替代验证方式和例外范围。

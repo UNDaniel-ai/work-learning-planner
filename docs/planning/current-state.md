@@ -8,6 +8,7 @@
 - 将设计确认记录写入 `design.md`。
 - 创建 `implementation-plan.md`，拆分 12 个可测试实现步骤。
 - 明确默认技术栈候选：Next.js + TypeScript + SQLite + Drizzle + Vitest + Playwright。
+- 用户明确要求后续实现必须注意 TDD。
 
 ### 当前阶段
 
@@ -20,6 +21,7 @@
 - 用户尚未明确确认开始编码。
 - 尚未执行技术栈版本核查。
 - 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
+- Stage 4 开始后，除显式 `TDD 例外` 外，每个产品步骤必须记录 RED/GREEN 证据。
 
 ### 下一步唯一允许动作
 
