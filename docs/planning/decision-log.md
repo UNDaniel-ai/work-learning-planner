@@ -61,3 +61,34 @@
 - 后续开发、运行和 Git 操作以 Developer 下的目录为准。
 - 当前仓库仍保持 `main` 分支和原有提交历史。
 - 符号链接不属于项目内容，不会进入 Git 提交。
+
+## ADR-004：MVP 默认技术栈候选
+
+日期：2026-10-08
+状态：候选方向，待 Stage 3 确认
+
+### 背景
+
+技术设计确认后，需要把路线转成可执行实现步骤。项目需要一个低运维、适合单用户私有部署、易测试的 Web 技术栈。
+
+### 候选决策
+
+MVP 默认采用：
+
+- Next.js App Router + TypeScript
+- SQLite + Drizzle ORM
+- Zod
+- Vitest + Testing Library
+- Playwright
+- Tailwind CSS + lucide-react
+
+### 影响
+
+- 单仓库即可承载页面、服务端 API、领域逻辑和测试。
+- SQLite 降低首版运维成本，适合个人私有部署。
+- Provider contract tests 可以隔离 Vikunja，降低外部服务对本地测试的影响。
+
+### 未决问题
+
+- Stage 4 开始前需要核查当时稳定版本和脚手架命令。
+- 如果用户要求更强离线能力或桌面端体验，技术栈需要重新评估。

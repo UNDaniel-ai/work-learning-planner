@@ -4,7 +4,7 @@
 
 - 路由：Route C
 - 当前阶段：Stage 2 - Technical Design
-- 设计状态：草案，等待用户确认
+- 设计状态：已确认
 - 需求主文档：[requirements-alignment.md](./requirements-alignment.md)
 - 设计确认前：不创建实现计划，不开始产品编码
 
@@ -396,3 +396,9 @@ JSON 导出和可回滚同步
 - [Vikunja webhooks](https://vikunja.io/docs/webhooks/)
 - [Super Productivity plugin development](https://github.com/super-productivity/super-productivity/wiki/2.15-Develop-a-Plugin)
 - [Super Productivity local REST API](https://github.com/super-productivity/super-productivity/wiki/8.2-REST-API)
+
+## 15. 确认记录
+
+- AI 发起确认消息：当前阶段为 Stage 2，下一阶段为 Stage 3 Implementation Planning；确认前不创建 `implementation-plan.md`，不进入产品编码。
+- 用户确认原话：确认进入实现计划阶段
+- 确认时间：2026-10-08 19:45 CST

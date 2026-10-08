@@ -1,5 +1,30 @@
 # Current State
 
+## 2026-10-08
+
+### 已完成
+
+- 用户明确确认进入实现计划阶段。
+- 将设计确认记录写入 `design.md`。
+- 创建 `implementation-plan.md`，拆分 12 个可测试实现步骤。
+- 明确默认技术栈候选：Next.js + TypeScript + SQLite + Drizzle + Vitest + Playwright。
+
+### 当前阶段
+
+- Stage 3 - Implementation Planning
+- 实现计划草案已完成，等待用户确认。
+- 实现计划文档：`temp/sessions/2026-10-07-规划项目选型/implementation-plan.md`
+
+### 当前阻塞
+
+- 用户尚未明确确认开始编码。
+- 尚未执行技术栈版本核查。
+- 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
+
+### 下一步唯一允许动作
+
+向用户呈现实现计划结论并发起 Stage 3 → Stage 4 的显式确认。确认前不创建产品功能代码。
+
 ## 2026-10-07
 
 ### 已完成
@@ -23,24 +48,13 @@ Vikunja 任务底座
 可持续的周计划与复盘流程
 ```
 
-这不是最终架构确认。确认前仍需要比较：
+当时仍需比较：
 
 1. 使用 Vikunja API 构建独立规划层。
 2. 使用 Super Productivity 插件或外部面板。
 3. 从零构建一体化系统。
 
-### 当前阶段
+### 阶段结论
 
-- Stage 2 - Technical Design
-- 设计草案已完成，等待用户确认。
-- 设计文档：`temp/sessions/2026-10-07-规划项目选型/design.md`
-
-### 当前阻塞
-
-- 用户尚未明确确认进入实现计划阶段。
-- 尚未确认是否必须自托管 / 离线。
-- 尚未确认第一版是否以任务执行为主，还是以目标与复盘为主。
-
-### 下一步唯一允许动作
-
-向用户呈现设计结论并发起 Stage 2 → Stage 3 的显式确认。确认前不创建实现计划和产品功能代码。
+- Stage 2 技术设计已完成并于 2026-10-08 获得确认。
+- 推荐路线为独立 Planner Web 应用 + Vikunja API v2 任务适配器 + 本地规划数据库。
