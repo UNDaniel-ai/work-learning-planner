@@ -6,11 +6,11 @@
 
 ## 当前状态
 
-- 当前阶段：Stage 3 - Implementation Planning
+- 当前阶段：Stage 4 - TDD Execution
 - 当前路线：Route C
 - 当前推荐方向：`Vikunja` 作为任务底座，叠加个人工作学习规划层
 - 是否允许编码：否
-- 下一步：确认实现计划后开始编码
+- 下一步：继续执行实现计划步骤 2，建立配置、环境变量与健康检查
 
 ## 目标
 
@@ -68,4 +68,13 @@
 
 ## 本地开发
 
-当前仓库处于实现计划阶段，默认技术栈候选已写入 `implementation-plan.md`，但尚未获得开始编码确认，也尚未启动产品开发服务。进入实现阶段后，会在这里补充安装、运行、测试和部署命令。
+当前已建立最小 Next.js / TypeScript 应用骨架。常用命令：
+
+```bash
+pnpm install
+pnpm dev
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```

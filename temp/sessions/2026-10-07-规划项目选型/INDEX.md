@@ -3,9 +3,9 @@
 ## 当前状态
 
 - 当前路由：Route C（多方案研究与后续产品化）
-- 当前阶段：Stage 3 - Implementation Planning
-- 当前主文档：[implementation-plan.md](./implementation-plan.md)
-- 是否允许编码：否
+- 当前阶段：Stage 4 - TDD Execution
+- 当前主文档：[progress-details.md](./progress-details.md)
+- 是否允许编码：是
 - 是否允许宣告完成：否
 
 ## 目标
@@ -21,8 +21,8 @@
 - [x] 进入设计方案比较
 - [x] 用户确认设计方案
 - [x] 形成实现计划
-- [ ] 用户确认开始编码
+- [x] 用户确认开始编码
 
 ## 下一步唯一允许动作
 
-完成可执行实现计划、测试策略、步骤契约和验收边界，并向用户发起 Stage 3 → Stage 4 的显式确认。在用户确认开始编码前，不创建产品代码。
+按 `implementation-plan.md` 从步骤 1 开始执行，使用 TDD / RED-GREEN-REFACTOR 纪律，并把每个步骤的命令、结果和例外记录到 `progress-details.md`。完成验收前，不允许宣告整个项目完成。

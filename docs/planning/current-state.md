@@ -5,27 +5,28 @@
 ### 已完成
 
 - 用户明确确认进入实现计划阶段。
+- 用户明确确认开始编码。
 - 将设计确认记录写入 `design.md`。
 - 创建 `implementation-plan.md`，拆分 12 个可测试实现步骤。
 - 明确默认技术栈候选：Next.js + TypeScript + SQLite + Drizzle + Vitest + Playwright。
 - 用户明确要求后续实现必须注意 TDD。
+- 完成步骤 1：建立 Next.js / TypeScript 应用脚手架与基础质量门。
 
 ### 当前阶段
 
-- Stage 3 - Implementation Planning
-- 实现计划草案已完成，等待用户确认。
-- 实现计划文档：`temp/sessions/2026-10-07-规划项目选型/implementation-plan.md`
+- Stage 4 - TDD Execution
+- 当前执行文档：`temp/sessions/2026-10-07-规划项目选型/progress-details.md`
+- 下一步：步骤 2 - 建立配置、环境变量与健康检查。
 
 ### 当前阻塞
 
-- 用户尚未明确确认开始编码。
-- 尚未执行技术栈版本核查。
+- 尚未建立 `.env.example` 和配置校验。
 - 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
 - Stage 4 开始后，除显式 `TDD 例外` 外，每个产品步骤必须记录 RED/GREEN 证据。
 
 ### 下一步唯一允许动作
 
-向用户呈现实现计划结论并发起 Stage 3 → Stage 4 的显式确认。确认前不创建产品功能代码。
+继续按 `implementation-plan.md` 执行步骤 2。步骤 2 需要先写配置测试并验证 RED，再实现最小配置读取和健康检查。
 
 ## 2026-10-07
 

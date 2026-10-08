@@ -5,7 +5,7 @@
 - **创建时间**: 2026-10-08 19:45 CST
 - **当前路由**: Route C
 - **当前阶段**: Stage 3 - Implementation Planning
-- **计划状态**: 草案，等待用户确认
+- **计划状态**: 已确认，进入 Stage 4 执行
 - **设计依据**: [design.md](./design.md)
 
 ## 计划概览
@@ -103,7 +103,7 @@
 
 ### 步骤 1：建立应用脚手架与基础质量门
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：已确认 `design.md`
 - **前置输入**：
@@ -118,6 +118,10 @@
   - `postcss.config.mjs`
   - `vitest.config.ts`
   - `playwright.config.ts`
+  - `drizzle.config.ts`
+  - `next-env.d.ts`
+  - `src/test/setup.ts`
+  - `src/test/smoke.test.ts`
   - `src/app/layout.tsx`
   - `src/app/page.tsx`
   - `src/app/globals.css`
@@ -126,31 +130,32 @@
   - 工具链初始化涉及后续所有步骤，适合主会话直接把控。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] `pnpm test` 在初始化前不存在或无法运行。
-  - [ ] `pnpm lint` 在初始化前不存在或无法运行。
+  - [x] `pnpm test` 在初始化前不存在或无法运行。
+  - [x] `pnpm lint` 在初始化前不存在或无法运行。
 - **Verify RED**：
-  - [ ] 记录初始化前脚本缺失或失败的输出。
+  - [x] 记录初始化前脚本缺失或失败的输出。
 - **Minimal Implementation**：
-  - [ ] 创建 Next.js TypeScript 应用骨架。
-  - [ ] 配置 lint、typecheck、test 和 e2e 脚本。
-  - [ ] 创建最小首页和全局样式。
+  - [x] 创建 Next.js TypeScript 应用骨架。
+  - [x] 配置 lint、typecheck、test 和 e2e 脚本。
+  - [x] 创建最小首页和全局样式。
 - **Verify GREEN**：
-  - [ ] `pnpm lint` 通过。
-  - [ ] `pnpm typecheck` 通过。
-  - [ ] `pnpm test` 能运行并通过空或示例测试。
+  - [x] `pnpm lint` 通过。
+  - [x] `pnpm typecheck` 通过。
+  - [x] `pnpm test` 能运行并通过空或示例测试。
 - **验证命令**：
-  - [ ] `pnpm install`
-  - [ ] `pnpm lint`
-  - [ ] `pnpm typecheck`
-  - [ ] `pnpm test`
+  - [x] `pnpm install`
+  - [x] `pnpm lint`
+  - [x] `pnpm typecheck`
+  - [x] `pnpm test`
+  - [x] `pnpm build`
 - **预期结果**：
-  - [ ] 仓库具备可运行的 TypeScript Web 应用骨架。
-  - [ ] 基础质量门可以在后续每一步重复执行。
+  - [x] 仓库具备可运行的 TypeScript Web 应用骨架。
+  - [x] 基础质量门可以在后续每一步重复执行。
 - **Refactor**：
-  - [ ] 删除脚手架生成的无关示例内容。
+  - [x] 删除脚手架生成的无关示例内容。
 - **Step Acceptance**：
-  - [ ] 基础脚本存在且通过。
-  - [ ] 首页可以在本地开发服务器渲染。
+  - [x] 基础脚本存在且通过。
+  - [x] 首页可以通过生产构建渲染。
 - **并行边界**：必须串行，所有产品代码依赖此步骤。
 - **TDD 例外**：部分例外。脚手架配置本身不适合严格 TDD，但脚本缺失作为 RED 证据。
 
@@ -679,16 +684,16 @@
 
 ## Stage 4 启动前检查
 
-- [ ] 用户确认步骤顺序。
-- [ ] 用户确认测试策略。
-- [ ] 用户确认 `预期结果` 作为步骤级输出契约。
-- [ ] 用户确认默认技术栈：Next.js + TypeScript + SQLite + Drizzle。
-- [ ] 用户确认首版由用户单独部署或提供 Vikunja，本项目只连接 Vikunja。
-- [ ] 用户确认 Stage 4 采用严格 TDD，除显式 `TDD 例外` 外必须记录 RED/GREEN 证据。
-- [ ] 可以进入编码阶段。
+- [x] 用户确认步骤顺序。
+- [x] 用户确认测试策略。
+- [x] 用户确认 `预期结果` 作为步骤级输出契约。
+- [x] 用户确认默认技术栈：Next.js + TypeScript + SQLite + Drizzle。
+- [x] 用户确认首版由用户单独部署或提供 Vikunja，本项目只连接 Vikunja。
+- [x] 用户确认 Stage 4 采用严格 TDD，除显式 `TDD 例外` 外必须记录 RED/GREEN 证据。
+- [x] 可以进入编码阶段。
 
 ## 用户确认
 
-- AI 发起确认消息：待本计划提交后发起。
-- 用户确认原话：待确认。
-- 确认时间：待确认。
+- AI 发起确认消息：当前阶段为 Stage 3，下一阶段为 Stage 4 TDD Execution；确认前不开始产品编码。
+- 用户确认原话：确认开始编码
+- 确认时间：2026-10-08 19:59 CST
