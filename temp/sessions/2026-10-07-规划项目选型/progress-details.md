@@ -334,3 +334,61 @@
 
 - 将 SQLite nullable 字段转换集中在 repository 边界，避免上层领域和用例处理数据库驱动细节。
 - 仓储层保持不依赖 UI 或 Vikunja client。
+
+## 步骤 6：实现规划用例服务
+
+### Step Contract
+
+- 前置输入：
+  - 领域规则、仓储和 `TaskProvider` 已可用。
+  - 步骤 5 已建立 SQLite / Drizzle 持久化和测试迁移。
+- TDD 分类：严格 TDD。
+- 执行模式：
+  - 计划标记为 `subagent candidate`。
+  - Capability detection：multi_agent 工具可用；当前步骤要串联领域规则、仓储和 provider，属于核心业务闭环，不适合拆出与主会话并行的独立实现。
+  - 决策：step-scoped fallback 到主会话，继续使用 `und-test-driven-development`。不声称使用了子代理。
+- 目标验证：
+  - `pnpm test src/domain/planning/use-cases.test.ts`
+  - `pnpm typecheck`
+  - 完整回归：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`
+
+### Verify RED
+
+- 先写测试：
+  - `src/domain/planning/use-cases.test.ts`
+- `pnpm test src/domain/planning/use-cases.test.ts`
+  - 结果：失败，exit code 1。
+  - 失败原因：无法解析 `./use-cases`，目标用例服务实现尚不存在。
+- RED 结论：失败原因指向当前切片，满足 TDD RED。
+
+### Minimal Implementation
+
+- 新增 `src/domain/planning/use-cases.ts`：
+  - `createGoal`：通过领域规则创建目标并持久化。
+  - `createLearningTopic`：通过领域规则创建学习主题并持久化。
+  - `createWeeklyPlan`：创建外部任务、保存 `task_link`、创建周计划并关联本周重点任务。
+  - `scheduleTimeBlock`：读取周期和已有时间块，复用领域规则校验周期范围与重叠，再持久化时间块。
+  - `recordReview`：根据时间块汇总计划 / 实际分钟数并保存复盘。
+  - provider 失败时包装为 `PlanningUseCaseError`，并在本地写入前中止。
+- 更新 `src/lib/db/repositories.ts`：
+  - 导出 `PlanningRepository` 类型，供用例层依赖抽象使用。
+
+### Verify GREEN
+
+- `pnpm test src/domain/planning/use-cases.test.ts`
+  - 结果：通过，exit code 0，1 个测试文件、2 个测试通过。
+- `pnpm typecheck`
+  - 结果：通过，exit code 0。
+- `pnpm test`
+  - 结果：通过，exit code 0，7 个测试文件、22 个测试通过。
+- `pnpm build`
+  - 结果：通过，exit code 0。
+- `pnpm lint`
+  - 第一次结果：通过，exit code 0，但测试中的失败 provider 有 7 个 unused parameter warning。
+  - 修复：将失败 provider 方法直接指向无参 `fail` helper。
+  - 最终结果：通过，exit code 0，无 warning。
+
+### Refactor After Green
+
+- 失败 provider 测试替身改为无参 helper，消除 lint 噪音。
+- 用例层保持为编排层，领域校验仍在 `rules.ts`，持久化细节仍在 repository。

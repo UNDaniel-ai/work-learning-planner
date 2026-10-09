@@ -25,4 +25,4 @@
 
 ## 下一步唯一允许动作
 
-按 `implementation-plan.md` 执行步骤 6，先写规划用例服务测试并验证 RED，再实现目标到周计划、任务关联、时间块和复盘的用例闭环。完成验收前，不允许宣告整个项目完成。
+按 `implementation-plan.md` 执行步骤 7，先写 Vikunja provider 和连接测试的失败测试并验证 RED，再实现 API client、响应校验、provider 适配器和连接验证路由。完成验收前，不允许宣告整个项目完成。

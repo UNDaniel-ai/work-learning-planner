@@ -338,7 +338,7 @@
 
 ### 步骤 6：实现规划用例服务
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：步骤 3、步骤 4、步骤 5
 - **前置输入**：
@@ -351,28 +351,28 @@
   - 用例服务具备明确输入输出，适合并行实现；主会话 review 业务闭环。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] 创建周计划、添加任务、分配时间块、记录复盘的用例测试先失败。
-  - [ ] 外部任务被删除或 provider 失败时的测试先失败。
+  - [x] 创建周计划、添加任务、分配时间块、记录复盘的用例测试先失败。
+  - [x] 外部任务被删除或 provider 失败时的测试先失败。
 - **Verify RED**：
-  - [ ] `pnpm test src/domain/planning/use-cases.test.ts` 失败。
+  - [x] `pnpm test src/domain/planning/use-cases.test.ts` 失败。
 - **Minimal Implementation**：
-  - [ ] 实现周计划创建。
-  - [ ] 实现任务关联和本周重点选择。
-  - [ ] 实现时间块记录。
-  - [ ] 实现每日 / 每周复盘保存。
+  - [x] 实现周计划创建。
+  - [x] 实现任务关联和本周重点选择。
+  - [x] 实现时间块记录。
+  - [x] 实现每日 / 每周复盘保存。
 - **Verify GREEN**：
-  - [ ] 用例测试通过。
+  - [x] 用例测试通过。
 - **验证命令**：
-  - [ ] `pnpm test src/domain/planning/use-cases.test.ts`
-  - [ ] `pnpm typecheck`
+  - [x] `pnpm test src/domain/planning/use-cases.test.ts`
+  - [x] `pnpm typecheck`
 - **预期结果**：
-  - [ ] MVP 的核心业务闭环可以在无 UI 情况下运行。
-  - [ ] provider 错误不会破坏本地规划数据。
+  - [x] MVP 的核心业务闭环可以在无 UI 情况下运行。
+  - [x] provider 错误不会破坏本地规划数据。
 - **Refactor**：
-  - [ ] 将重复校验沉到领域规则。
+  - [x] 将重复校验沉到领域规则。
 - **Step Acceptance**：
-  - [ ] 一条从目标到周复盘的用例测试通过。
-  - [ ] 异常路径有明确错误结果。
+  - [x] 一条从目标到周复盘的用例测试通过。
+  - [x] 异常路径有明确错误结果。
 - **并行边界**：必须早于 UI 页面和 e2e。
 - **TDD 例外**：无。
 

@@ -239,6 +239,8 @@ export function createPlanningRepository(db: PlannerDatabase) {
   };
 }
 
+export type PlanningRepository = ReturnType<typeof createPlanningRepository>;
+
 async function getPlanningPeriod(
   db: PlannerDatabase,
   periodId: EntityId
