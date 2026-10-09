@@ -204,3 +204,59 @@
 
 - 规则保持在 `src/domain/planning/rules.ts`，类型保持在 `src/domain/planning/types.ts`。
 - 未接入 UI、数据库或 Vikunja，保持纯领域边界。
+
+## 步骤 4：定义 TaskProvider 接口与内存实现
+
+### Step Contract
+
+- 前置输入：
+  - 设计要求通过 `TaskProvider` 隔离 Vikunja。
+  - 步骤 1 已完成，测试与类型检查可运行。
+- TDD 分类：严格 TDD。
+- 执行模式：
+  - 计划标记为 `subagent candidate`。
+  - Capability detection：multi_agent 工具可用；当前步骤是主线立即阻塞切片，没有可并行的非重叠主会话工作。
+  - 决策：step-scoped fallback 到主会话，继续使用 `und-test-driven-development`。不声称使用了子代理。
+- 目标验证：
+  - `pnpm test src/domain/tasks/provider.contract.test.ts`
+  - `pnpm lint`
+  - `pnpm typecheck`
+  - `pnpm test`
+
+### Verify RED
+
+- 先写测试：
+  - `src/domain/tasks/provider.contract.test.ts`
+- `pnpm test src/domain/tasks/provider.contract.test.ts`
+  - 结果：失败，exit code 1。
+  - 失败原因：无法解析 `../../integrations/memory/provider`，目标 provider 实现尚不存在。
+- RED 结论：失败原因指向当前切片，满足 TDD RED。
+
+### Minimal Implementation
+
+- 新增 `src/domain/tasks/provider.ts`：
+  - 定义 `TaskProvider` 接口。
+  - 定义 `PlannerTask`、创建 / 更新输入、列表过滤器。
+  - 定义 `TaskProviderError` 和错误码。
+- 新增 `src/integrations/memory/provider.ts`：
+  - 实现 `createMemoryTaskProvider`。
+  - 支持 list、create、update、complete、postpone。
+  - 对空标题、非法日期、缺失任务使用 typed provider error。
+- 中途修复：
+  - 初版 provider 方法在返回 Promise 前同步抛错，导致 `.rejects` contract 失败。
+  - 将 provider 方法改为 `async`，保证 provider error 以 rejected promise 形式暴露。
+
+### Verify GREEN
+
+- `pnpm test src/domain/tasks/provider.contract.test.ts`
+  - 结果：通过，exit code 0，1 个测试文件、6 个测试通过。
+- 完整回归：
+  - `pnpm lint`：通过，exit code 0。
+  - `pnpm typecheck`：通过，exit code 0。
+  - `pnpm test`：通过，exit code 0，5 个测试文件、18 个测试通过。
+  - `pnpm build`：通过，exit code 0。
+
+### Refactor After Green
+
+- Provider contract 保持在 `src/domain/tasks`，内存实现保持在 `src/integrations/memory`。
+- 统一 provider 错误通过 `TaskProviderError` 暴露，避免后续 UI 绑定具体实现细节。

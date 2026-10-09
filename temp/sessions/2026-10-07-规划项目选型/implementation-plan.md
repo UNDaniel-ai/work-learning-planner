@@ -250,7 +250,7 @@
 
 ### 步骤 4：定义 TaskProvider 接口与内存实现
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：步骤 1
 - **前置输入**：
@@ -264,26 +264,29 @@
   - Provider contract 与内存实现边界明确，适合单独执行。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] provider contract 对 list、create、update、complete、postpone 的测试先失败。
+  - [x] provider contract 对 list、create、update、complete、postpone 的测试先失败。
 - **Verify RED**：
-  - [ ] `pnpm test src/domain/tasks/provider.contract.test.ts` 失败。
+  - [x] `pnpm test src/domain/tasks/provider.contract.test.ts` 失败。
 - **Minimal Implementation**：
-  - [ ] 定义 `TaskProvider` 接口和统一错误类型。
-  - [ ] 实现内存 provider。
-  - [ ] 让 contract tests 能复用到 Vikunja provider。
+  - [x] 定义 `TaskProvider` 接口和统一错误类型。
+  - [x] 实现内存 provider。
+  - [x] 让 contract tests 能复用到 Vikunja provider。
 - **Verify GREEN**：
-  - [ ] 内存 provider 通过 provider contract。
+  - [x] 内存 provider 通过 provider contract。
 - **验证命令**：
-  - [ ] `pnpm test src/domain/tasks/provider.contract.test.ts`
-  - [ ] `pnpm typecheck`
+  - [x] `pnpm test src/domain/tasks/provider.contract.test.ts`
+  - [x] `pnpm lint`
+  - [x] `pnpm typecheck`
+  - [x] `pnpm test`
+  - [x] `pnpm build`
 - **预期结果**：
-  - [ ] 应用拥有不依赖 Vikunja 的任务 provider 抽象。
-  - [ ] 后续 UI 和用例可以先基于内存 provider 开发。
+  - [x] 应用拥有不依赖 Vikunja 的任务 provider 抽象。
+  - [x] 后续 UI 和用例可以先基于内存 provider 开发。
 - **Refactor**：
-  - [ ] 确保外部 provider 错误不会泄露到 UI 类型。
+  - [x] 确保外部 provider 错误不会泄露到 UI 类型。
 - **Step Acceptance**：
-  - [ ] Contract test 可用于多个 provider。
-  - [ ] 内存 provider 覆盖 MVP 所需任务行为。
+  - [x] Contract test 可用于多个 provider。
+  - [x] 内存 provider 覆盖 MVP 所需任务行为。
 - **并行边界**：可与步骤 3 并行，必须早于 UI 集成。
 - **TDD 例外**：无。
 

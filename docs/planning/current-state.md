@@ -13,22 +13,23 @@
 - 完成步骤 1：建立 Next.js / TypeScript 应用脚手架与基础质量门。
 - 完成步骤 2：配置、环境变量与健康检查。
 - 完成步骤 3：领域模型与纯规则。
+- 完成步骤 4：`TaskProvider` 接口与内存实现。
 
 ### 当前阶段
 
 - Stage 4 - TDD Execution
 - 当前执行文档：`temp/sessions/2026-10-07-规划项目选型/progress-details.md`
-- 下一步：步骤 4 - 定义 `TaskProvider` 接口与内存实现。
+- 下一步：步骤 5 - 建立 SQLite 数据库 schema 与仓储。
 
 ### 当前阻塞
 
-- 尚未定义任务 provider 抽象。
+- 尚未建立本地规划数据仓储。
 - 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
 - Stage 4 开始后，除显式 `TDD 例外` 外，每个产品步骤必须记录 RED/GREEN 证据。
 
 ### 下一步唯一允许动作
 
-继续按 `implementation-plan.md` 执行步骤 4。步骤 4 需要先写 provider contract 测试并验证 RED，再实现 `TaskProvider` 接口与内存 provider。
+继续按 `implementation-plan.md` 执行步骤 5。步骤 5 需要先写仓储测试并验证 RED，再实现 SQLite / Drizzle schema 与仓储。
 
 ## 2026-10-07
 
