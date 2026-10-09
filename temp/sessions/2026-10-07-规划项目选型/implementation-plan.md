@@ -4,7 +4,7 @@
 
 - **创建时间**: 2026-10-08 19:45 CST
 - **当前路由**: Route C
-- **当前阶段**: Stage 3 - Implementation Planning
+- **当前阶段**: Stage 4 - TDD Execution
 - **计划状态**: 已确认，进入 Stage 4 执行
 - **设计依据**: [design.md](./design.md)
 
@@ -292,7 +292,7 @@
 
 ### 步骤 5：建立 SQLite 数据库 schema 与仓储
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：步骤 2、步骤 3
 - **前置输入**：
@@ -310,29 +310,29 @@
   - 数据库 schema 和仓储边界清晰，可由 subagent 实现后主会话 review。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] 创建目标、学习主题、周计划、时间块、复盘和 task_link 的仓储测试先失败。
-  - [ ] 导出所需数据读取测试先失败。
+  - [x] 创建目标、学习主题、周计划、时间块、复盘和 task_link 的仓储测试先失败。
+  - [x] 导出所需数据读取测试先失败。
 - **Verify RED**：
-  - [ ] `pnpm test src/lib/db/repositories.test.ts` 失败。
+  - [x] `pnpm test src/lib/db/repositories.test.ts` 失败。
 - **Minimal Implementation**：
-  - [ ] 建立 Drizzle schema。
-  - [ ] 实现 CRUD 和查询方法。
-  - [ ] 编写数据模型文档。
+  - [x] 建立 Drizzle schema。
+  - [x] 实现 CRUD 和查询方法。
+  - [x] 编写数据模型文档。
 - **Verify GREEN**：
-  - [ ] 仓储测试通过。
-  - [ ] 数据模型文档与 schema 字段一致。
+  - [x] 仓储测试通过。
+  - [x] 数据模型文档与 schema 字段一致。
 - **验证命令**：
-  - [ ] `pnpm test src/lib/db/repositories.test.ts`
-  - [ ] `pnpm typecheck`
-  - [ ] `pnpm db:generate`
+  - [x] `pnpm test src/lib/db/repositories.test.ts`
+  - [x] `pnpm typecheck`
+  - [x] `pnpm db:generate`
 - **预期结果**：
-  - [ ] 本地规划数据可以持久化。
-  - [ ] 数据模型和迁移可以被 Git 追踪。
+  - [x] 本地规划数据可以持久化。
+  - [x] 数据模型和迁移可以被 Git 追踪。
 - **Refactor**：
-  - [ ] 确保仓储不直接依赖 UI 或 Vikunja client。
+  - [x] 确保仓储不直接依赖 UI 或 Vikunja client。
 - **Step Acceptance**：
-  - [ ] 所有本地核心表都有测试覆盖。
-  - [ ] 数据库文件仍被 `.gitignore` 排除。
+  - [x] 所有本地核心表都有测试覆盖。
+  - [x] 数据库文件仍被 `.gitignore` 排除。
 - **并行边界**：依赖步骤 3，必须早于导出和真实页面。
 - **TDD 例外**：无。
 

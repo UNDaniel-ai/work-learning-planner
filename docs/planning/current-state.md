@@ -1,5 +1,28 @@
 # Current State
 
+## 2026-10-09
+
+### 已完成
+
+- 完成步骤 5：SQLite / Drizzle schema、libsql client、仓储、迁移和数据模型文档。
+- 使用严格 TDD 完成仓储测试：先 RED，再 GREEN。
+- 完整质量门通过：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`。
+
+### 当前阶段
+
+- Stage 4 - TDD Execution
+- 当前执行文档：`temp/sessions/2026-10-07-规划项目选型/progress-details.md`
+- 下一步：步骤 6 - 实现规划用例服务。
+
+### 当前阻塞
+
+- 尚未实现目标到周计划、任务关联、时间块和复盘的用例服务。
+- 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
+
+### 下一步唯一允许动作
+
+继续按 `implementation-plan.md` 执行步骤 6。步骤 6 需要先写用例服务测试并验证 RED，再实现业务闭环。
+
 ## 2026-10-08
 
 ### 已完成

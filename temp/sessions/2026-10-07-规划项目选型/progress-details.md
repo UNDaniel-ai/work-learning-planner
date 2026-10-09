@@ -260,3 +260,77 @@
 
 - Provider contract 保持在 `src/domain/tasks`，内存实现保持在 `src/integrations/memory`。
 - 统一 provider 错误通过 `TaskProviderError` 暴露，避免后续 UI 绑定具体实现细节。
+
+## 步骤 5：建立 SQLite 数据库 schema 与仓储
+
+### Step Contract
+
+- 前置输入：
+  - 领域类型已定义。
+  - `DATABASE_URL` 配置已可读取。
+  - `drizzle.config.ts` 已存在，但还没有实际 schema、client、仓储和迁移。
+- TDD 分类：严格 TDD。
+- 执行模式：
+  - 计划标记为 `subagent candidate`。
+  - Capability detection：multi_agent 工具可用；当前步骤会同时触碰 schema、仓储、迁移、依赖和数据模型文档，且没有明确可并行的非重叠主会话工作。
+  - 决策：step-scoped fallback 到主会话，继续使用 `und-test-driven-development`。不声称使用了子代理。
+- SQLite driver 决策：
+  - 使用 `@libsql/client` + `drizzle-orm/libsql`。
+  - 原因：与 Drizzle SQLite 适配器兼容，支持本地 `file:` SQLite URL，也避免 `better-sqlite3` 原生编译对安装环境和 VPN/网络状态的额外不确定性。
+- 目标验证：
+  - `pnpm test src/lib/db/repositories.test.ts`
+  - `pnpm typecheck`
+  - `pnpm db:generate`
+  - 完整回归：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`
+
+### Verify RED
+
+- 先写测试：
+  - `src/lib/db/repositories.test.ts`
+- `pnpm test src/lib/db/repositories.test.ts`
+  - 结果：失败，exit code 1。
+  - 失败原因：无法解析 `./client`，目标数据库 client / schema / repository 实现尚不存在。
+- RED 结论：失败原因指向当前切片，满足 TDD RED。
+
+### Minimal Implementation
+
+- 安装 `@libsql/client@0.18.0`：
+  - 安装成功；未出现 VPN / 网络失败。
+  - `pnpm` 提示跳过若干依赖 build scripts，当前测试与构建未受影响。
+- 新增 `src/lib/db/schema.ts`：
+  - 建立 `areas`、`goals`、`learning_topics`、`task_links`、`planning_periods`、`planning_period_focus_goals`、`planning_period_task_links`、`time_blocks`、`reviews`、`sync_cursors`。
+- 新增 `src/lib/db/client.ts`：
+  - 用 `@libsql/client` + `drizzle-orm/libsql` 创建 SQLite 连接。
+  - 提供 `migratePlannerDatabase` 用于测试和本地初始化。
+- 新增 `src/lib/db/repositories.ts`：
+  - 实现本地规划数据写入、读取、规划周期 hydration、导出快照和 sync cursor upsert。
+  - 在 repository 边界将 SQLite `null` 可选字段映射回领域对象的 `undefined`。
+- 新增 `docs/development/data-model.md`：
+  - 记录本地 SQLite 与 Vikunja 的数据边界。
+- 执行 `pnpm db:generate`：
+  - 结果：通过，生成 `drizzle/0000_cooing_gamma_corps.sql` 及 meta snapshot。
+
+### Verify GREEN
+
+- `pnpm test src/lib/db/repositories.test.ts`
+  - 第一次结果：失败，exit code 1。
+  - 原因：SQLite 可选字段取回为 `null`，`Area.color` 等领域对象期望 `undefined`。
+  - 修复：在 repository 读取边界增加 `null -> undefined` 映射。
+- `pnpm test src/lib/db/repositories.test.ts`
+  - 最终结果：通过，exit code 0，1 个测试文件、2 个测试通过。
+- `pnpm typecheck`
+  - 第一次结果：失败，exit code 2。
+  - 原因：`sync_cursors.error` 的 `null -> undefined` 映射在类型层没有收窄。
+  - 修复：增加 `toSyncCursor` mapper。
+- `pnpm typecheck`
+  - 最终结果：通过，exit code 0。
+- 完整回归：
+  - `pnpm lint`：通过，exit code 0。
+  - `pnpm typecheck`：通过，exit code 0。
+  - `pnpm test`：通过，exit code 0，6 个测试文件、20 个测试通过。
+  - `pnpm build`：通过，exit code 0。
+
+### Refactor After Green
+
+- 将 SQLite nullable 字段转换集中在 repository 边界，避免上层领域和用例处理数据库驱动细节。
+- 仓储层保持不依赖 UI 或 Vikunja client。
