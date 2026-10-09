@@ -8,22 +8,23 @@
 - 使用严格 TDD 完成仓储测试：先 RED，再 GREEN。
 - 完成步骤 6：规划用例服务，覆盖目标 / 学习主题、周计划、任务关联、时间块和复盘闭环。
 - Provider 失败时，本地计划数据不会写入半截状态。
+- 完成步骤 7：Vikunja API v2 client、Zod 响应校验、TaskProvider 适配器和连接测试 API。
 - 完整质量门通过：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`。
 
 ### 当前阶段
 
 - Stage 4 - TDD Execution
 - 当前执行文档：`temp/sessions/2026-10-07-规划项目选型/progress-details.md`
-- 下一步：步骤 7 - 实现 Vikunja client 与 provider 适配器。
+- 下一步：步骤 8 - 搭建 App Shell 与导航。
 
 ### 当前阻塞
 
 - 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
-- 尚未实现 Vikunja API v2 client、响应校验和连接验证路由。
+- 尚未实现真实 Vikunja 实例连接下的手工验收。
 
 ### 下一步唯一允许动作
 
-继续按 `implementation-plan.md` 执行步骤 7。步骤 7 需要先写 Vikunja provider 和连接测试的失败测试并验证 RED，再实现 API client、响应校验和连接验证路由。
+继续按 `implementation-plan.md` 执行步骤 8。步骤 8 需要先写 App Shell 和导航的失败测试并验证 RED，再实现五个 MVP 页面框架。
 
 ## 2026-10-08
 

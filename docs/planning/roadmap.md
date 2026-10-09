@@ -73,7 +73,8 @@
 - 步骤 4 已完成：`TaskProvider` 接口与内存实现。
 - 步骤 5 已完成：SQLite 数据库 schema、仓储、迁移和数据模型文档。
 - 步骤 6 已完成：规划用例服务。
-- 下一步：步骤 7，Vikunja client 与 provider 适配器。
+- 步骤 7 已完成：Vikunja API v2 client、provider 适配器和连接测试 API。
+- 下一步：步骤 8，App Shell 与导航。
 
 候选 MVP 范围：
 

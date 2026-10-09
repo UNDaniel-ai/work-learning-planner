@@ -25,4 +25,4 @@
 
 ## 下一步唯一允许动作
 
-按 `implementation-plan.md` 执行步骤 7，先写 Vikunja provider 和连接测试的失败测试并验证 RED，再实现 API client、响应校验、provider 适配器和连接验证路由。完成验收前，不允许宣告整个项目完成。
+按 `implementation-plan.md` 执行步骤 8，先写 App Shell 和导航的失败测试并验证 RED，再实现 Today、Weekly、Goals、Review、Settings 的基础页面框架。完成验收前，不允许宣告整个项目完成。

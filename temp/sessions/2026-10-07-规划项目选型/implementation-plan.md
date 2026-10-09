@@ -378,7 +378,7 @@
 
 ### 步骤 7：实现 Vikunja client 与 provider 适配器
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：步骤 2、步骤 4
 - **前置输入**：
@@ -396,31 +396,31 @@
   - 外部适配器可用 mock fetch 隔离，适合独立实现；主会话需 review 错误语义和安全边界。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] mock fetch 下的 list、create、complete、postpone contract 测试先失败。
-  - [ ] 401、404、网络失败和 schema mismatch 测试先失败。
+  - [x] mock fetch 下的 list、create、complete、postpone contract 测试先失败。
+  - [x] 401、404、网络失败和 schema mismatch 测试先失败。
 - **Verify RED**：
-  - [ ] `pnpm test src/integrations/vikunja/provider.test.ts` 失败。
+  - [x] `pnpm test src/integrations/vikunja/provider.test.ts` 失败。
 - **Minimal Implementation**：
-  - [ ] 封装 authenticated fetch。
-  - [ ] 用 Zod 校验响应。
-  - [ ] 映射 Vikunja task 到内部 task 类型。
-  - [ ] 实现连接测试 API。
-  - [ ] 编写 Vikunja 配置文档。
+  - [x] 封装 authenticated fetch。
+  - [x] 用 Zod 校验响应。
+  - [x] 映射 Vikunja task 到内部 task 类型。
+  - [x] 实现连接测试 API。
+  - [x] 编写 Vikunja 配置文档。
 - **Verify GREEN**：
-  - [ ] Vikunja provider 通过 contract tests。
-  - [ ] 错误路径测试通过。
+  - [x] mock fetch 版 Vikunja provider 行为契约测试通过。
+  - [x] 错误路径测试通过。
 - **验证命令**：
-  - [ ] `pnpm test src/integrations/vikunja/provider.test.ts`
-  - [ ] `pnpm test src/domain/tasks/provider.contract.test.ts`
-  - [ ] `pnpm typecheck`
+  - [x] `pnpm test src/integrations/vikunja/provider.test.ts src/app/api/vikunja/test-connection/route.test.ts`
+  - [x] `pnpm test src/domain/tasks/provider.contract.test.ts`
+  - [x] `pnpm typecheck`
 - **预期结果**：
-  - [ ] 应用可以通过统一 provider 读取和写入 Vikunja 任务。
-  - [ ] API 令牌不会出现在日志或客户端 bundle 中。
+  - [x] 应用可以通过统一 provider 读取和写入 Vikunja 任务。
+  - [x] API 令牌不会出现在日志或客户端 bundle 中。
 - **Refactor**：
-  - [ ] 把 API 路径和字段映射集中在 `src/integrations/vikunja`。
+  - [x] 把 API 路径和字段映射集中在 `src/integrations/vikunja`。
 - **Step Acceptance**：
-  - [ ] mock 版 Vikunja contract 全部通过。
-  - [ ] 文档说明如何配置真实 Vikunja。
+  - [x] mock fetch 版 Vikunja provider 行为契约全部通过。
+  - [x] 文档说明如何配置真实 Vikunja。
 - **并行边界**：可与步骤 5、6 部分并行；真实 UI 集成依赖此步骤。
 - **TDD 例外**：无。
 

@@ -392,3 +392,84 @@
 
 - 失败 provider 测试替身改为无参 helper，消除 lint 噪音。
 - 用例层保持为编排层，领域校验仍在 `rules.ts`，持久化细节仍在 repository。
+
+## 步骤 7：实现 Vikunja client 与 provider 适配器
+
+### Step Contract
+
+- 前置输入：
+  - `TaskProvider` contract 已存在。
+  - 配置层已提供 `VIKUNJA_BASE_URL` 与 `VIKUNJA_API_TOKEN`。
+  - 官方 OpenAPI 已核对：`GET /api/v2/tasks`、`POST /api/v2/projects/{project}/tasks`、`PATCH /api/v2/tasks/{task}`。
+- TDD 分类：严格 TDD。
+- 执行模式：
+  - 计划标记为 `subagent candidate`。
+  - Capability detection：multi_agent 工具可用；当前步骤涉及外部 API 契约、错误映射、安全边界和 route 集成，主会话执行便于同步 review。
+  - 决策：step-scoped fallback 到主会话，继续使用 `und-test-driven-development`。不声称使用了子代理。
+- 目标验证：
+  - `pnpm test src/integrations/vikunja/provider.test.ts src/app/api/vikunja/test-connection/route.test.ts`
+  - `pnpm test src/domain/tasks/provider.contract.test.ts`
+  - `pnpm typecheck`
+  - 完整回归：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`
+
+### Verify RED
+
+- 先写测试：
+  - `src/integrations/vikunja/provider.test.ts`
+  - `src/app/api/vikunja/test-connection/route.test.ts`
+- `pnpm test src/integrations/vikunja/provider.test.ts src/app/api/vikunja/test-connection/route.test.ts`
+  - 结果：失败，exit code 1。
+  - 失败原因：无法解析 `./provider` 与 `./route`，目标 Vikunja provider 和连接测试 route 尚不存在。
+- RED 结论：失败原因指向当前切片，满足 TDD RED。
+
+### External API Grounding
+
+- 通过 `https://try.vikunja.io/api/v2/openapi.json` 核对 API v2：
+  - `GET /api/v2/tasks`：跨项目分页读取任务。
+  - `POST /api/v2/projects/{project}/tasks`：在项目中创建任务。
+  - `PATCH /api/v2/tasks/{task}`：更新、完成或延期任务。
+  - 任务字段使用 `done`、`due_date`、`created`、`updated`、`labels`、`project_id` 等。
+- API token 通过 `Authorization: Bearer ...` 发送，仅在服务端 provider / route 中使用。
+
+### Minimal Implementation
+
+- 新增 `src/integrations/vikunja/client.ts`：
+  - 统一补齐 `/api/v2` base path。
+  - 封装 Bearer authentication、JSON body、HTTP / network error 映射。
+- 新增 `src/integrations/vikunja/schemas.ts`：
+  - 用 Zod 校验任务和分页响应。
+- 新增 `src/integrations/vikunja/provider.ts`：
+  - 实现 `TaskProvider` 的 list、create、update、complete、postpone。
+  - 映射 Vikunja numeric task ID 到内部 string ID。
+  - 映射 Vikunja date-time 到内部 date-only due date。
+  - 映射 `done`、labels、description、priority 和时间字段。
+- 新增 `src/app/api/vikunja/test-connection/route.ts`：
+  - 检查配置完整性。
+  - 通过 list tasks 验证连接，并只返回连接状态和任务数量。
+- 新增 `docs/development/vikunja.md`：
+  - 记录环境变量、API v2 端点和 token 边界。
+- 标签写入边界：
+  - 本步读取并映射 Vikunja labels。
+  - Vikunja v2 写入标签需要先解析 label ID，再调用专用 label endpoint；当前 MVP 暂不伪造为 task JSON 字段，后续按真实 UI 需求补齐。
+
+### Verify GREEN
+
+- `pnpm test src/integrations/vikunja/provider.test.ts src/app/api/vikunja/test-connection/route.test.ts`
+  - 第一次结果：测试断言错误，URL 查询参数空格以 `+` 编码；生产请求没有问题。
+  - 修复：改用 `URL.searchParams.get("filter")` 断言解码后的参数值。
+  - 最终结果：通过，2 个测试文件、5 个测试通过。
+- `pnpm test src/domain/tasks/provider.contract.test.ts`
+  - 结果：通过，1 个测试文件、6 个测试通过。
+- `pnpm typecheck`
+  - 结果：通过，exit code 0。
+- `pnpm lint`
+  - 结果：通过，exit code 0。
+- `pnpm test`
+  - 结果：通过，exit code 0，9 个测试文件、27 个测试通过。
+- `pnpm build`
+  - 结果：通过，exit code 0，生成 `/api/vikunja/test-connection`。
+
+### Refactor After Green
+
+- 将 provider 的 HTTP、schema、领域映射分别放在 `client.ts`、`schemas.ts`、`provider.ts`。
+- 连接 route 不泄露 token，也不把外部错误细节直接暴露给客户端。
