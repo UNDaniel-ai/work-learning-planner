@@ -149,3 +149,58 @@
 
 - 将测试 helper 命名改为 `configModule`，消除 lint 风险。
 - 未做额外业务重构。
+
+## 步骤 3：定义领域模型与纯规则
+
+### Step Contract
+
+- 前置输入：
+  - `design.md` 已定义本地保存 `area`、`goal`、`learning_topic`、`planning_period`、`time_block`、`review`、`task_link`。
+  - 步骤 1 已完成，测试与类型检查可运行。
+- TDD 分类：严格 TDD。
+- 执行模式：
+  - 计划标记为 `subagent candidate`。
+  - Capability detection：multi_agent 工具可用；当前步骤是主线立即阻塞切片，没有可并行的非重叠主会话工作。
+  - 决策：step-scoped fallback 到主会话，继续使用 `und-test-driven-development`。不声称使用了子代理。
+- 目标验证：
+  - `pnpm test src/domain/planning/rules.test.ts`
+  - `pnpm lint`
+  - `pnpm typecheck`
+  - `pnpm test`
+
+### Verify RED
+
+- 先写测试：
+  - `src/domain/planning/rules.test.ts`
+- `pnpm test src/domain/planning/rules.test.ts`
+  - 结果：失败，exit code 1。
+  - 失败原因：无法解析 `./rules`，目标实现文件尚不存在。
+- RED 结论：失败原因指向当前切片，满足 TDD RED。
+
+### Minimal Implementation
+
+- 新增 `src/domain/planning/types.ts`：
+  - 定义 `Area`、`Goal`、`LearningTopic`、`PlanningPeriod`、`TimeBlock`、`Review`、`TaskLink`。
+  - 定义领域枚举类型：领域类型、状态、目标周期、计划周期、复盘类型。
+- 新增 `src/domain/planning/rules.ts`：
+  - `createGoal`：规范化标题并创建 active 目标。
+  - `createLearningTopic`：校验标题和 0-100 学习进度。
+  - `createWeeklyPlanningPeriod`：根据 anchor date 创建周一到周日的计划周期。
+  - `createTimeBlock`：校验起止时间并计算分钟数。
+  - `addTimeBlock`：校验 period 归属、周期范围和时间块重叠。
+  - `createReview`：校验计划 / 实际分钟数并计算偏差。
+
+### Verify GREEN
+
+- `pnpm test src/domain/planning/rules.test.ts`
+  - 结果：通过，exit code 0，1 个测试文件、8 个测试通过。
+- 完整回归：
+  - `pnpm lint`：通过，exit code 0。
+  - `pnpm typecheck`：通过，exit code 0。
+  - `pnpm test`：通过，exit code 0，4 个测试文件、12 个测试通过。
+  - `pnpm build`：通过，exit code 0。
+
+### Refactor After Green
+
+- 规则保持在 `src/domain/planning/rules.ts`，类型保持在 `src/domain/planning/types.ts`。
+- 未接入 UI、数据库或 Vikunja，保持纯领域边界。

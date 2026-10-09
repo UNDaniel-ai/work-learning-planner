@@ -207,7 +207,7 @@
 
 ### 步骤 3：定义领域模型与纯规则
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：步骤 1
 - **前置输入**：
@@ -221,27 +221,30 @@
   - 领域规则边界清晰，适合并行实现；但主会话需 review 类型命名和业务语义。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] 新建目标、学习主题、周计划、时间块和复盘的规则测试先失败。
-  - [ ] 时间块重叠、空目标标题、跨周日期等非法状态测试先失败。
+  - [x] 新建目标、学习主题、周计划、时间块和复盘的规则测试先失败。
+  - [x] 时间块重叠、空目标标题、跨周日期等非法状态测试先失败。
 - **Verify RED**：
-  - [ ] `pnpm test src/domain/planning/rules.test.ts` 失败，失败原因是目标实现缺失。
+  - [x] `pnpm test src/domain/planning/rules.test.ts` 失败，失败原因是目标实现缺失。
 - **Minimal Implementation**：
-  - [ ] 定义核心类型和状态枚举。
-  - [ ] 实现纯函数校验规则。
-  - [ ] 实现周计划和时间块的基本计算。
+  - [x] 定义核心类型和状态枚举。
+  - [x] 实现纯函数校验规则。
+  - [x] 实现周计划和时间块的基本计算。
 - **Verify GREEN**：
-  - [ ] 领域规则测试通过。
+  - [x] 领域规则测试通过。
 - **验证命令**：
-  - [ ] `pnpm test src/domain/planning/rules.test.ts`
-  - [ ] `pnpm typecheck`
+  - [x] `pnpm test src/domain/planning/rules.test.ts`
+  - [x] `pnpm lint`
+  - [x] `pnpm typecheck`
+  - [x] `pnpm test`
+  - [x] `pnpm build`
 - **预期结果**：
-  - [ ] 本地规划领域有清晰类型和可测试规则。
-  - [ ] 不依赖数据库或 Vikunja，也能验证核心业务约束。
+  - [x] 本地规划领域有清晰类型和可测试规则。
+  - [x] 不依赖数据库或 Vikunja，也能验证核心业务约束。
 - **Refactor**：
-  - [ ] 把 UI 或 API 无关的业务逻辑保持在 `src/domain/planning`。
+  - [x] 把 UI 或 API 无关的业务逻辑保持在 `src/domain/planning`。
 - **Step Acceptance**：
-  - [ ] 非法领域状态有测试覆盖。
-  - [ ] 类型命名与 `design.md` 的数据边界一致。
+  - [x] 非法领域状态有测试覆盖。
+  - [x] 类型命名与 `design.md` 的数据边界一致。
 - **并行边界**：可与步骤 4 的 provider 接口并行。
 - **TDD 例外**：无。
 
