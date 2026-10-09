@@ -473,3 +473,83 @@
 
 - 将 provider 的 HTTP、schema、领域映射分别放在 `client.ts`、`schemas.ts`、`provider.ts`。
 - 连接 route 不泄露 token，也不把外部错误细节直接暴露给客户端。
+
+## 步骤 8：搭建应用 Shell 与导航
+
+### Step Contract
+
+- 前置输入：
+  - 应用骨架可运行。
+  - MVP 页面清单已在 `design.md` 确认。
+  - 领域、数据库和 TaskProvider 已具备可供后续页面接入的边界。
+- TDD 分类：严格 TDD。
+- 执行模式：主会话。
+- Subagent 决策：计划明确要求主会话，UI 骨架需要统一控制交互和响应式视觉。
+- 目标验证：
+  - `pnpm test src/components/app-shell.test.tsx`
+  - `pnpm lint`
+  - `pnpm typecheck`
+  - 完整回归：`pnpm test`、`pnpm build`
+
+### Verify RED
+
+- 先写测试：
+  - `src/components/app-shell.test.tsx`
+  - `src/app/page.test.tsx`
+- `pnpm test src/components/app-shell.test.tsx`
+  - 结果：失败，exit code 1。
+  - 失败原因：无法解析 `/review` 等页面和 `AppShell`，目标应用框架尚不存在。
+- RED 结论：失败原因指向当前切片，满足 TDD RED。
+
+### Minimal Implementation
+
+- 新增 `src/components/app-shell.tsx`：
+  - 桌面左侧导航。
+  - 移动端横向导航。
+  - 当前路径 `aria-current="page"`。
+- 新增 `src/components/status-banner.tsx`：
+  - 展示 Vikunja 连接状态占位。
+  - 提供进入连接设置的图标入口。
+- 新增 `src/components/page-layout.tsx`：
+  - 复用页面标题、空状态、指标条和操作链接。
+- 更新 `src/app/layout.tsx`：
+  - 全局包裹 `AppShell`。
+- 更新 `src/app/page.tsx`：
+  - 根路径跳转到 `/today`，避免继续显示脚手架说明页。
+- 新增五个 MVP 页面：
+  - `/today`
+  - `/weekly`
+  - `/goals`
+  - `/review`
+  - `/settings`
+
+### Verify GREEN
+
+- `pnpm test src/components/app-shell.test.tsx src/app/page.test.tsx`
+  - 第一次结果：失败，原因是 jsdom 中桌面和移动导航同时存在，宽泛查询命中重复的 Today 链接。
+  - 修复：测试限定在 `aria-label="Primary"` 的主导航内查询。
+  - 最终结果：通过，2 个测试文件、3 个测试通过。
+- `pnpm typecheck`
+  - 结果：通过，exit code 0。
+- `pnpm test`
+  - 结果：通过，exit code 0，11 个测试文件、30 个测试通过。
+- `pnpm lint`
+  - 第一次结果：通过，exit code 0，但有 1 个未使用 lucide icon warning。
+  - 修复：删除未使用 import。
+  - 最终结果：通过，exit code 0。
+- `pnpm build`
+  - 结果：通过，exit code 0。
+  - 生成页面：`/today`、`/weekly`、`/goals`、`/review`、`/settings`。
+- 浏览器级检查：
+  - `pnpm dev --hostname 127.0.0.1 --port 3000` 启动成功。
+  - 根路径返回标准 `307 -> /today`。
+  - Codex 内置浏览器打开 `/today`，桌面布局、主导航、连接状态条和空状态均可见。
+  - 发现并修复全局 anchor 样式覆盖操作链接文字颜色的问题。
+  - CSS 修复后，操作链接 computed color 为白色，按钮文字在截图中可见。
+  - Playwright Chromium 下载因 VPN 下 CDN 长时间无进度而停止，未完成独立 Playwright 截图。
+
+### Refactor After Green
+
+- 抽出 `page-layout.tsx`，减少五个页面重复的标题、空状态和操作链接结构。
+- 保持页面为空状态骨架，不提前实现 Step 9 / Step 10 的真实表单和数据绑定。
+- 将全局 anchor 基础样式放入 Tailwind `@layer base`，确保页面级颜色 utility 可以正常覆盖。

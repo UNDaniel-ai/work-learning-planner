@@ -25,4 +25,4 @@
 
 ## 下一步唯一允许动作
 
-按 `implementation-plan.md` 执行步骤 8，先写 App Shell 和导航的失败测试并验证 RED，再实现 Today、Weekly、Goals、Review、Settings 的基础页面框架。完成验收前，不允许宣告整个项目完成。
+按 `implementation-plan.md` 执行步骤 9，先写 Goals & Learning 与 Weekly Plan 的失败测试并验证 RED，再实现目标 / 学习主题表单、周计划读取与时间块分配。完成验收前，不允许宣告整个项目完成。

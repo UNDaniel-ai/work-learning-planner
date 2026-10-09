@@ -74,7 +74,8 @@
 - 步骤 5 已完成：SQLite 数据库 schema、仓储、迁移和数据模型文档。
 - 步骤 6 已完成：规划用例服务。
 - 步骤 7 已完成：Vikunja API v2 client、provider 适配器和连接测试 API。
-- 下一步：步骤 8，App Shell 与导航。
+- 步骤 8 已完成：App Shell、响应式导航、连接状态条和五个 MVP 页面空状态。
+- 下一步：步骤 9，Goals & Learning 与 Weekly Plan。
 
 候选 MVP 范围：
 

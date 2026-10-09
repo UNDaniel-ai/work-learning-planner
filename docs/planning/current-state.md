@@ -9,22 +9,24 @@
 - 完成步骤 6：规划用例服务，覆盖目标 / 学习主题、周计划、任务关联、时间块和复盘闭环。
 - Provider 失败时，本地计划数据不会写入半截状态。
 - 完成步骤 7：Vikunja API v2 client、Zod 响应校验、TaskProvider 适配器和连接测试 API。
+- 完成步骤 8：App Shell、响应式导航、连接状态条和五个 MVP 页面空状态。
 - 完整质量门通过：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`。
 
 ### 当前阶段
 
 - Stage 4 - TDD Execution
 - 当前执行文档：`temp/sessions/2026-10-07-规划项目选型/progress-details.md`
-- 下一步：步骤 8 - 搭建 App Shell 与导航。
+- 下一步：步骤 9 - 实现 Goals & Learning 与 Weekly Plan。
 
 ### 当前阻塞
 
 - 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
 - 尚未实现真实 Vikunja 实例连接下的手工验收。
+- 尚未实现目标 / 学习主题表单和周计划数据绑定。
 
 ### 下一步唯一允许动作
 
-继续按 `implementation-plan.md` 执行步骤 8。步骤 8 需要先写 App Shell 和导航的失败测试并验证 RED，再实现五个 MVP 页面框架。
+继续按 `implementation-plan.md` 执行步骤 9。步骤 9 需要先写 Goals & Learning 与 Weekly Plan 的失败测试并验证 RED，再实现目标 / 学习主题和周计划数据绑定。
 
 ## 2026-10-08
 

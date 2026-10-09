@@ -426,7 +426,7 @@
 
 ### 步骤 8：搭建应用 Shell 与导航
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P1
 - **依赖**：步骤 1
 - **前置输入**：
@@ -446,27 +446,27 @@
   - UI 骨架需要符合产品体验约束，主会话实现更稳。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] 组件测试期望导航包含 Today、Weekly、Goals、Review、Settings，初始化前失败。
+  - [x] 组件测试期望导航包含 Today、Weekly、Goals、Review、Settings，初始化前失败。
 - **Verify RED**：
-  - [ ] `pnpm test src/components/app-shell.test.tsx` 失败。
+  - [x] `pnpm test src/components/app-shell.test.tsx` 失败。
 - **Minimal Implementation**：
-  - [ ] 建立响应式应用框架。
-  - [ ] 创建五个页面的空状态。
-  - [ ] 增加连接状态展示位。
+  - [x] 建立响应式应用框架。
+  - [x] 创建五个页面的空状态。
+  - [x] 增加连接状态展示位。
 - **Verify GREEN**：
-  - [ ] App shell 组件测试通过。
+  - [x] App shell 组件测试通过。
 - **验证命令**：
-  - [ ] `pnpm test src/components/app-shell.test.tsx`
-  - [ ] `pnpm lint`
-  - [ ] `pnpm typecheck`
+  - [x] `pnpm test src/components/app-shell.test.tsx`
+  - [x] `pnpm lint`
+  - [x] `pnpm typecheck`
 - **预期结果**：
-  - [ ] 用户可以在五个 MVP 页面之间导航。
-  - [ ] 页面视觉结构为工作型界面，而不是营销页。
+  - [x] 用户可以在五个 MVP 页面之间导航。
+  - [x] 页面视觉结构为工作型界面，而不是营销页。
 - **Refactor**：
-  - [ ] 抽离重复页面标题和状态样式。
+  - [x] 抽离重复页面标题和状态样式。
 - **Step Acceptance**：
-  - [ ] 桌面和移动宽度下导航可用。
-  - [ ] 空状态不含无意义说明墙。
+  - [x] 桌面和移动宽度下导航可用。
+  - [x] 空状态不含无意义说明墙。
 - **并行边界**：可在领域用例完成前进行，但真实数据绑定依赖步骤 6。
 - **TDD 例外**：无。
 
