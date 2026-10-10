@@ -6,6 +6,7 @@
 - **当前路由**: Route C
 - **当前阶段**: Stage 4 - TDD Execution
 - **执行纪律**: TDD by default；显式 `TDD 例外` 必须记录原因和替代验证
+- **当前执行游标**: 步骤 9 已完成；下一步执行步骤 10 - Today 与 Review 闭环
 
 ## Stage 4 入口记录
 
@@ -553,3 +554,94 @@
 - 抽出 `page-layout.tsx`，减少五个页面重复的标题、空状态和操作链接结构。
 - 保持页面为空状态骨架，不提前实现 Step 9 / Step 10 的真实表单和数据绑定。
 - 将全局 anchor 基础样式放入 Tailwind `@layer base`，确保页面级颜色 utility 可以正常覆盖。
+
+## 步骤 9：实现 Goals & Learning 与 Weekly Plan
+
+### Step Contract
+
+- 前置输入：
+  - 本地仓储和规划用例已通过测试。
+  - App Shell 和五个页面入口已存在。
+  - `TaskProvider` 已有统一接口，后续页面不直接依赖 Vikunja client。
+- TDD 分类：严格 TDD。
+- 执行模式：
+  - 计划标记为 `subagent candidate`。
+  - 当前切片同时涉及目标 / 学习主题表单、任务选择、时间块交互和页面数据边界；没有清晰的非重叠并行边界。
+  - 决策：step-scoped fallback 到主会话，继续使用 `und-test-driven-development`。不声称使用了子代理。
+- 目标验证：
+  - `pnpm test src/components/goal-picker.test.tsx src/components/task-list.test.tsx src/components/time-block-grid.test.tsx`
+  - `pnpm typecheck`
+  - 完整回归：`pnpm lint`、`pnpm test`、`pnpm build`
+
+### Verify RED
+
+- 基础组件测试：
+  - 先写 `src/components/goal-picker.test.tsx`、`src/components/task-list.test.tsx`、`src/components/time-block-grid.test.tsx`。
+  - `pnpm test src/components/goal-picker.test.tsx src/components/task-list.test.tsx src/components/time-block-grid.test.tsx`
+  - 结果：失败，exit code 1。
+  - 失败原因：无法解析目标组件文件，当前切片实现尚不存在。
+- API route 测试：
+  - 先写 `src/app/api/planning/routes.test.ts`，覆盖 goals、learning topics、tasks、weekly、time blocks。
+  - `pnpm test src/app/api/planning/routes.test.ts`
+  - 结果：失败，exit code 1。
+  - 失败原因：目标 planning API route 尚不存在。
+- 页面容器测试：
+  - 先写 `src/components/goals-workspace.test.tsx`、`src/components/weekly-planner.test.tsx`，并把 weekly GET 期望扩展为返回 `timeBlocks`。
+  - `pnpm test src/components/goals-workspace.test.tsx src/components/weekly-planner.test.tsx src/app/api/planning/routes.test.ts`
+  - 结果：失败，exit code 1。
+  - 失败原因：`goals-workspace` / `weekly-planner` 组件尚不存在，weekly GET 未返回 `timeBlocks`。
+- RED 结论：失败均指向 Step 9 当前切片，满足 TDD RED。
+
+### Minimal Implementation
+
+- 新增 planning runtime：
+  - `src/lib/planning/runtime.ts` 统一初始化数据库、迁移、默认 work / learning areas 和 task provider。
+  - 未配置 Vikunja 时回退到 memory provider。
+- 新增 planning API：
+  - `GET/POST /api/planning/goals`
+  - `GET/POST /api/planning/learning-topics`
+  - `GET /api/planning/tasks`
+  - `GET/POST /api/planning/weekly`
+  - `POST /api/planning/time-blocks`
+  - `GET /api/planning/weekly` 返回 `planningPeriods` 与 `timeBlocks`，支持刷新后恢复周计划和时间块。
+- 新增 UI 基础组件：
+  - `GoalPicker`：工作目标和学习主题分栏展示与创建。
+  - `TaskList`：开放任务列表和选择控件。
+  - `TimeBlockGrid`：时间块列表与新增表单。
+- 新增页面容器：
+  - `GoalsWorkspace` 通过 planning API 加载 / 创建目标和学习主题。
+  - `WeeklyPlanner` 通过 planning API 加载目标、任务、周计划和时间块，并支持创建周计划与添加时间块。
+- 接入页面：
+  - `src/app/goals/page.tsx` 接入 `GoalsWorkspace`。
+  - `src/app/weekly/page.tsx` 接入 `WeeklyPlanner`。
+- 工具链修复：
+  - Next dev 自动生成 `AGENTS.md`；删除该未追踪文件，并在 `next.config.ts` 设置 `agentRules: false` 防止重复生成。
+  - 将 `next-env.d.ts` 恢复为已提交的 `.next/types` 引用，避免 dev server 造成无关 churn。
+
+### Verify GREEN
+
+- Step 9 基础组件 / API 验证：
+  - `pnpm test src/components/goal-picker.test.tsx src/components/task-list.test.tsx src/components/time-block-grid.test.tsx src/app/api/planning/routes.test.ts`
+  - 结果：通过，exit code 0，4 个测试文件、9 个测试通过。
+- 页面容器 / API 新增行为验证：
+  - `pnpm test src/components/goals-workspace.test.tsx src/components/weekly-planner.test.tsx src/app/api/planning/routes.test.ts`
+  - 结果：通过，exit code 0，3 个测试文件、6 个测试通过。
+- Step 9 目标测试集：
+  - `pnpm test src/components/goal-picker.test.tsx src/components/task-list.test.tsx src/components/time-block-grid.test.tsx src/components/goals-workspace.test.tsx src/components/weekly-planner.test.tsx src/app/api/planning/routes.test.ts`
+  - 结果：通过，exit code 0，6 个测试文件、12 个测试通过。
+- 质量门：
+  - `pnpm lint`：通过，exit code 0。
+  - `pnpm typecheck`：通过，exit code 0。
+  - `pnpm test`：通过，exit code 0，17 个测试文件、42 个测试通过。
+  - `pnpm build`：通过，exit code 0。
+- 浏览器级检查：
+  - 首次打开 `http://127.0.0.1:3000/goals` 时发现 dev server 未设置 `DATABASE_URL`，planning API 返回 400。
+  - 停止旧 dev server 后，用 `DATABASE_URL=file:local.db pnpm dev --hostname 127.0.0.1 --port 3000` 重启。
+  - Codex 内置浏览器打开 `/goals`：页面显示 Goals & Learning、工作目标表单和学习主题表单，无 API 错误。
+  - Codex 内置浏览器打开 `/weekly`：页面显示 Weekly Plan、This week's focus、任务空状态、Capacity 和 Time blocks 区域，无 API 错误。
+
+### Refactor After Green
+
+- 页面级交互放入 `GoalsWorkspace` 和 `WeeklyPlanner`，基础组件保持只负责展示和表单事件。
+- API route 继续作为 UI 与 planning runtime 的边界，UI 不直接依赖 Vikunja client 或数据库实现。
+- 当前 Step 9 选择任务时提交任务快照创建周计划；后续可在独立切片补充“直接关联已有 Vikunja task”的领域用例。

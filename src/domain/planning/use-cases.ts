@@ -218,6 +218,8 @@ export function createPlanningUseCases(input: CreatePlanningUseCasesInput) {
   };
 }
 
+export type PlanningUseCases = ReturnType<typeof createPlanningUseCases>;
+
 async function createTaskLinks(
   tasks: CreateWeeklyPlanTaskInput[],
   taskProvider: TaskProvider,

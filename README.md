@@ -10,7 +10,7 @@
 - 当前路线：Route C
 - 当前推荐方向：`Vikunja` 作为任务底座，叠加个人工作学习规划层
 - 是否允许编码：是
-- 下一步：继续执行实现计划步骤 9，实现 Goals & Learning 与 Weekly Plan
+- 下一步：继续执行实现计划步骤 10，实现 Today 与 Review 闭环
 
 ## 目标
 

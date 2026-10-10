@@ -25,4 +25,4 @@
 
 ## 下一步唯一允许动作
 
-按 `implementation-plan.md` 执行步骤 9，先写 Goals & Learning 与 Weekly Plan 的失败测试并验证 RED，再实现目标 / 学习主题表单、周计划读取与时间块分配。完成验收前，不允许宣告整个项目完成。
+按 `implementation-plan.md` 执行步骤 10，先写 Today 与 Review 的失败测试并验证 RED，再实现今日执行、实际投入记录和复盘表单。完成验收前，不允许宣告整个项目完成。

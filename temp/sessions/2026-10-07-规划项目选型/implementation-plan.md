@@ -472,7 +472,7 @@
 
 ### 步骤 9：实现 Goals & Learning 与 Weekly Plan
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：步骤 5、步骤 6、步骤 8
 - **前置输入**：
@@ -480,36 +480,43 @@
 - **文件范围**：
   - `src/app/goals/page.tsx`
   - `src/app/weekly/page.tsx`
+  - `src/app/api/planning/*/route.ts`
+  - `src/lib/planning/runtime.ts`
   - `src/components/goal-picker.tsx`
+  - `src/components/goals-workspace.tsx`
   - `src/components/task-list.tsx`
   - `src/components/time-block-grid.tsx`
+  - `src/components/weekly-planner.tsx`
   - 相关组件测试
 - **执行模式**：subagent candidate
 - **Subagent Eligibility**：
   - 页面范围明确，可在 contract 清楚后并行实现；主会话 review 交互完整性。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] 创建目标和学习主题的组件测试先失败。
-  - [ ] 周计划选择重点任务和添加时间块的测试先失败。
+  - [x] 创建目标和学习主题的组件测试先失败。
+  - [x] 周计划选择重点任务和添加时间块的测试先失败。
 - **Verify RED**：
-  - [ ] `pnpm test src/app/weekly` 或相关组件测试失败。
+  - [x] `pnpm test src/components/goal-picker.test.tsx src/components/task-list.test.tsx src/components/time-block-grid.test.tsx` 先失败，原因是目标组件尚不存在。
+  - [x] `pnpm test src/components/goals-workspace.test.tsx src/components/weekly-planner.test.tsx src/app/api/planning/routes.test.ts` 先失败，原因是页面容器尚不存在且 weekly GET 未返回 time blocks。
 - **Minimal Implementation**：
-  - [ ] 实现目标和学习主题表单。
-  - [ ] 实现本周计划创建和读取。
-  - [ ] 实现任务列表和时间块分配。
+  - [x] 实现目标和学习主题表单。
+  - [x] 实现本周计划创建和读取。
+  - [x] 实现任务列表和时间块分配。
 - **Verify GREEN**：
-  - [ ] 相关组件和用例集成测试通过。
+  - [x] 相关组件、页面容器和 API route 测试通过。
 - **验证命令**：
-  - [ ] `pnpm test`
-  - [ ] `pnpm typecheck`
+  - [x] `pnpm test`
+  - [x] `pnpm typecheck`
+  - [x] `pnpm lint`
+  - [x] `pnpm build`
 - **预期结果**：
-  - [ ] 用户可以创建工作目标和学习主题。
-  - [ ] 用户可以把任务放入本周计划并分配时间块。
+  - [x] 用户可以创建工作目标和学习主题。
+  - [x] 用户可以把任务放入本周计划并分配时间块。
 - **Refactor**：
-  - [ ] 把表单校验和领域校验边界理清。
+  - [x] 把表单校验和领域校验边界理清。
 - **Step Acceptance**：
-  - [ ] 周计划保存后刷新仍存在。
-  - [ ] 工作 / 学习领域在 UI 中可区分。
+  - [x] 周计划保存后刷新仍存在。
+  - [x] 工作 / 学习领域在 UI 中可区分。
 - **并行边界**：依赖领域用例和仓储，必须在 Today 与 Review 完整闭环前完成。
 - **TDD 例外**：无。
 

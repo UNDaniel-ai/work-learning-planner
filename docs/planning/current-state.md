@@ -1,5 +1,31 @@
 # Current State
 
+## 2026-10-10
+
+### 已完成
+
+- 完成步骤 9：Goals & Learning 与 Weekly Plan。
+- 新增目标 / 学习主题创建 UI，并通过 planning API 写入本地规划层。
+- 新增周计划 UI，可选择目标和任务快照创建本周计划，并添加时间块。
+- `GET /api/planning/weekly` 返回 `planningPeriods` 与 `timeBlocks`，支持刷新后恢复周计划和时间块。
+- 完整质量门通过：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`。
+
+### 当前阶段
+
+- Stage 4 - TDD Execution
+- 当前执行文档：`temp/sessions/2026-10-07-规划项目选型/progress-details.md`
+- 下一步：步骤 10 - 实现 Today 与 Review 闭环。
+
+### 当前阻塞
+
+- 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
+- 尚未实现真实 Vikunja 实例连接下的手工验收。
+- Today 和 Review 仍是 Step 8 的空状态骨架。
+
+### 下一步唯一允许动作
+
+继续按 `implementation-plan.md` 执行步骤 10。步骤 10 需要先写 Today 与 Review 的失败测试并验证 RED，再实现今日执行、实际投入记录和复盘表单。
+
 ## 2026-10-09
 
 ### 已完成
