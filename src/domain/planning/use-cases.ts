@@ -30,6 +30,7 @@ import type {
 
 export type PlanningUseCaseErrorCode =
   | "PLANNING_PERIOD_NOT_FOUND"
+  | "TIME_BLOCK_NOT_FOUND"
   | "TASK_PROVIDER_ERROR";
 
 export class PlanningUseCaseError extends Error {
@@ -93,10 +94,16 @@ export type ScheduleTimeBlockUseCaseInput = {
   note?: string;
 };
 
+export type RecordTimeBlockActualUseCaseInput = {
+  id: EntityId;
+  actualMinutes: number;
+};
+
 export type RecordReviewUseCaseInput = {
   id: EntityId;
   periodId: EntityId;
   type: ReviewType;
+  date?: string;
   wins?: string[];
   misses?: string[];
   adjustments?: string[];
@@ -177,6 +184,29 @@ export function createPlanningUseCases(input: CreatePlanningUseCasesInput) {
       return timeBlock;
     },
 
+    async recordTimeBlockActual(
+      actualInput: RecordTimeBlockActualUseCaseInput
+    ): Promise<TimeBlock> {
+      const timeBlock = await repository.getTimeBlock(actualInput.id);
+
+      if (!timeBlock) {
+        throw new PlanningUseCaseError(
+          "TIME_BLOCK_NOT_FOUND",
+          `Time block not found: ${actualInput.id}`
+        );
+      }
+
+      assertNonNegativeInteger(actualInput.actualMinutes, "actualMinutes");
+      const updatedTimeBlock = {
+        ...timeBlock,
+        actualMinutes: actualInput.actualMinutes
+      };
+
+      await repository.updateTimeBlock(updatedTimeBlock);
+
+      return updatedTimeBlock;
+    },
+
     async recordReview(
       reviewInput: RecordReviewUseCaseInput
     ): Promise<Review> {
@@ -185,12 +215,18 @@ export function createPlanningUseCases(input: CreatePlanningUseCasesInput) {
         reviewInput.periodId
       );
       const timeBlocks = await repository.listTimeBlocksForPeriod(period.id);
-      const plannedMinutes = sum(timeBlocks, (timeBlock) =>
+      const reviewTimeBlocks =
+        reviewInput.type === "daily" && reviewInput.date
+          ? timeBlocks.filter(
+              (timeBlock) => timeBlock.startsAt.slice(0, 10) === reviewInput.date
+            )
+          : timeBlocks;
+      const plannedMinutes = sum(reviewTimeBlocks, (timeBlock) =>
         timeBlock.durationMinutes
       );
       const actualMinutes =
         reviewInput.actualMinutes ??
-        sum(timeBlocks, (timeBlock) => timeBlock.actualMinutes ?? 0);
+        sum(reviewTimeBlocks, (timeBlock) => timeBlock.actualMinutes ?? 0);
       const review = createReview({
         id: reviewInput.id,
         periodId: reviewInput.periodId,
@@ -295,4 +331,10 @@ function toUseCaseProviderError(
 
 function sum<T>(items: T[], select: (item: T) => number): number {
   return items.reduce((total, item) => total + select(item), 0);
+}
+
+function assertNonNegativeInteger(value: number, fieldName: string): void {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new Error(`${fieldName} must be a non-negative integer.`);
+  }
 }

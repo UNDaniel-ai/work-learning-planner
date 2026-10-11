@@ -46,7 +46,7 @@
 
 ## 3. 实现计划
 
-状态：计划完成，等待用户确认
+状态：计划完成，已确认并执行中
 
 需要产出：
 
@@ -59,7 +59,7 @@
 
 - 共 12 个步骤，从脚手架和配置开始，到领域模型、TaskProvider、SQLite 仓储、Vikunja 适配器、MVP 页面、导出和 e2e 验收。
 - 每个非平凡步骤都包含前置输入、文件范围、验证命令、预期结果和 Step Acceptance。
-- 进入编码前仍需要用户明确回复“确认开始编码”。
+- 用户已明确回复“确认开始编码”，当前处于 Stage 4 TDD Execution。
 
 ## 4. MVP 实现
 
@@ -76,7 +76,8 @@
 - 步骤 7 已完成：Vikunja API v2 client、provider 适配器和连接测试 API。
 - 步骤 8 已完成：App Shell、响应式导航、连接状态条和五个 MVP 页面空状态。
 - 步骤 9 已完成：Goals & Learning、Weekly Plan、planning API 页面接线和时间块分配。
-- 下一步：步骤 10，Today 与 Review 闭环。
+- 步骤 10 已完成：Today 与 Review 闭环、任务执行、实际投入和复盘表单。
+- 下一步：步骤 11，Settings、连接测试与 JSON 导出。
 
 候选 MVP 范围：
 

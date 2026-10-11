@@ -59,4 +59,24 @@ describe("TimeBlockGrid", () => {
       note: "Study testing"
     });
   });
+
+  it("records actual minutes for an existing block", () => {
+    const onRecordActual = vi.fn().mockResolvedValue(undefined);
+
+    render(
+      <TimeBlockGrid
+        blocks={blocks}
+        onCreateTimeBlock={vi.fn()}
+        onRecordActual={onRecordActual}
+      />
+    );
+
+    fireEvent.change(
+      screen.getByLabelText("Actual minutes for Focused implementation"),
+      { target: { value: "80" } }
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Save actual time" }));
+
+    expect(onRecordActual).toHaveBeenCalledWith("block-1", 80);
+  });
 });

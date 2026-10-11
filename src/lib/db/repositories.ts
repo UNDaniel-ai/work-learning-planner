@@ -145,6 +145,32 @@ export function createPlanningRepository(db: PlannerDatabase) {
       return rows.map((row) => normalizeUndefined(row) as TimeBlock);
     },
 
+    async getTimeBlock(timeBlockId: EntityId): Promise<TimeBlock | undefined> {
+      const [row] = await db
+        .select()
+        .from(timeBlocks)
+        .where(eq(timeBlocks.id, timeBlockId))
+        .limit(1);
+
+      return row ? (normalizeUndefined(row) as TimeBlock) : undefined;
+    },
+
+    async updateTimeBlock(timeBlock: TimeBlock): Promise<void> {
+      await db
+        .update(timeBlocks)
+        .set({
+          periodId: timeBlock.periodId,
+          areaId: timeBlock.areaId,
+          startsAt: timeBlock.startsAt,
+          endsAt: timeBlock.endsAt,
+          durationMinutes: timeBlock.durationMinutes,
+          taskLinkId: timeBlock.taskLinkId ?? null,
+          actualMinutes: timeBlock.actualMinutes ?? null,
+          note: timeBlock.note ?? null
+        })
+        .where(eq(timeBlocks.id, timeBlock.id));
+    },
+
     async listTimeBlocks(): Promise<TimeBlock[]> {
       const rows = await db
         .select()

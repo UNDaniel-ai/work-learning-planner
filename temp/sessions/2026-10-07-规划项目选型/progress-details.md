@@ -6,7 +6,97 @@
 - **当前路由**: Route C
 - **当前阶段**: Stage 4 - TDD Execution
 - **执行纪律**: TDD by default；显式 `TDD 例外` 必须记录原因和替代验证
-- **当前执行游标**: 步骤 9 已完成；下一步执行步骤 10 - Today 与 Review 闭环
+- **当前执行游标**: 步骤 10 已完成；下一步执行步骤 11 - Settings、连接测试与 JSON 导出
+
+## 步骤 10：实现 Today 与 Review 闭环
+
+### Step Contract
+
+- 前置输入：
+  - 步骤 9 已完成，已能创建周计划和时间块。
+  - `TaskProvider` 已支持 list、complete、postpone。
+  - `recordReview` 已存在，但当前只按整个 planning period 计算计划 / 实际分钟，需要补充 daily review 的日期范围语义。
+- 目标行为：
+  - Today 按指定日期读取当前周的关联任务和当天时间块。
+  - Today 可以完成任务、延期任务、记录时间块实际投入。
+  - Review 可以保存 daily / weekly review，并展示计划与实际偏差。
+- TDD 分类：严格 TDD。
+- 执行模式：
+  - 计划标记为 `subagent candidate`。
+  - capability detection：child-agent tooling 可用；但当前 slice 同时改动 use case、repository、provider API、页面容器和 route contract，存在共享状态与连续 RED/GREEN 依赖，不适合安全拆分为 disjoint write set。
+  - 决策：step-scoped fallback 到主会话；不 dispatch 子代理。替代方法为 `und-test-driven-development`，由主会话执行 spec compliance review 和 controller quality checklist。
+- 预期验证：
+  - Today / Review 目标测试先 RED，再按切片转 GREEN。
+  - `pnpm lint`
+  - `pnpm typecheck`
+  - `pnpm test`
+  - `pnpm build`
+
+### Verify RED
+
+- 先写测试：
+  - `src/app/api/planning/execution-routes.test.ts`
+  - `src/components/today-workspace.test.tsx`
+  - `src/components/review-workspace.test.tsx`
+  - `src/components/task-execution-list.test.tsx`
+  - `src/components/review-form.test.tsx`
+  - 扩展 `src/domain/planning/use-cases.test.ts` 和 `src/components/time-block-grid.test.tsx`。
+- 目标测试在实现前失败：
+  - Today / Review 页面容器和组件尚不存在时，组件测试无法解析目标模块。
+  - Today、Review API route 和 `recordTimeBlockActual` 尚不存在时，API / 领域测试无法解析目标实现。
+- RED 结论：失败原因均指向步骤 10 的当前切片，不是工具链或环境失败，满足严格 TDD 的 RED 要求。
+
+### Minimal Implementation
+
+- 领域与仓储：
+  - 新增 `recordTimeBlockActual` 和 `TIME_BLOCK_NOT_FOUND`。
+  - `recordReview` 的 daily review 只统计指定日期的时间块。
+  - repository 新增 `getTimeBlock`、`updateTimeBlock`。
+- API：
+  - 新增 `/api/planning/today`，按日期返回当前周计划、当天时间块和关联任务。
+  - 新增 `/api/planning/reviews`，支持读取和保存 daily / weekly review。
+  - 扩展 tasks / time-blocks PATCH，支持完成、延期和记录实际分钟。
+  - 统一处理时间块不存在等 planning API 错误。
+- UI：
+  - Today 显示计划投入、完成任务数、时间块和优先任务。
+  - 支持完成任务、选择日期延期任务和记录实际投入。
+  - Review 支持 wins、misses、adjustments、review 类型和实际分钟。
+  - Review 显示历史复盘与计划 / 实际偏差。
+
+### Verify GREEN
+
+- Step 10 聚焦回归：
+  - 命令：`pnpm test src/domain/planning/use-cases.test.ts src/app/api/planning/execution-routes.test.ts src/components/time-block-grid.test.tsx src/components/task-execution-list.test.tsx src/components/review-form.test.tsx src/components/today-workspace.test.tsx src/components/review-workspace.test.tsx`
+  - 结果：通过，7 个测试文件、13 个测试通过。
+- 完整质量门：
+  - `pnpm lint`：通过，exit code 0。
+  - `pnpm typecheck`：通过，exit code 0。
+  - `pnpm test`：通过，exit code 0，22 个测试文件、51 个测试通过。
+  - `pnpm build`：通过，exit code 0；Next.js 成功生成 Today、Review 及 planning API 路由。
+- 浏览器检查：
+  - 使用 `DATABASE_URL=file:local.db pnpm dev --hostname 127.0.0.1 --port 3000` 提供本地运行环境。
+  - `/today`：Today 工作区、导航、连接状态、指标区、时间块区和优先任务区均能加载。
+  - `/review`：Review 工作区能加载；无当前周计划时显示“先创建周计划”的明确空状态，无运行时 API 错误。
+
+### Refactor After Green
+
+- 将 daily review 的日期范围判断留在领域用例，避免 UI 决定统计语义。
+- 将 SQLite nullable 字段和时间块不存在错误分别收敛在 repository / API 边界。
+- `TimeBlockGrid` 保持展示与实际投入编辑职责，Today 容器负责 API 编排。
+- 主会话 fallback review checklist：
+  - Spec compliance：Today 查询按日期过滤；任务完成 / 延期通过 `TaskProvider`；daily / weekly review 分流；复盘不修改下周计划。
+  - Quality：组件不直接依赖数据库；错误通过用户可见状态呈现；完整质量门和聚焦回归均通过。
+
+### Step Acceptance
+
+- [x] 任务完成状态与 provider 状态一致。
+- [x] 任务延期通过 provider 写入新的 due date。
+- [x] 时间块实际投入可持久化并回显。
+- [x] daily review 只汇总指定日期，weekly review 汇总整个 planning period。
+- [x] 复盘保存不会自动修改下周计划。
+- [x] `/today` 与 `/review` 浏览器检查无运行时错误。
+
+步骤 10 已完成。下一步进入步骤 11；当前 session 仍处于 Stage 4，尚未进入最终验收，也不允许宣告整个 MVP 完成。
 
 ## Stage 4 入口记录
 

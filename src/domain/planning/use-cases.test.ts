@@ -157,6 +157,56 @@ describe("planning use cases", () => {
     ).resolves.toBeUndefined();
     await expect(repository.listTaskLinks()).resolves.toEqual([]);
   });
+
+  it("records actual minutes and scopes daily reviews to one date", async () => {
+    const { repository, useCases } = await createHarness();
+    const workArea: Area = {
+      id: "area-work",
+      name: "Work",
+      kind: "work"
+    };
+
+    await repository.createArea(workArea);
+    const period = await useCases.createWeeklyPlan({
+      id: "period-daily-review",
+      anchorDate: "2026-10-09"
+    });
+    const firstBlock = await useCases.scheduleTimeBlock({
+      id: "block-review-day",
+      periodId: period.id,
+      areaId: workArea.id,
+      startsAt: "2026-10-09T09:00:00.000Z",
+      endsAt: "2026-10-09T10:00:00.000Z"
+    });
+    await useCases.scheduleTimeBlock({
+      id: "block-review-other-day",
+      periodId: period.id,
+      areaId: workArea.id,
+      startsAt: "2026-10-10T09:00:00.000Z",
+      endsAt: "2026-10-11T10:30:00.000Z"
+    });
+
+    await useCases.recordTimeBlockActual({
+      id: firstBlock.id,
+      actualMinutes: 45
+    });
+    const review = await useCases.recordReview({
+      id: "review-daily",
+      periodId: period.id,
+      type: "daily",
+      date: "2026-10-09",
+      wins: ["Finished the focused block"]
+    });
+
+    await expect(repository.getTimeBlock(firstBlock.id)).resolves.toMatchObject({
+      actualMinutes: 45
+    });
+    expect(review).toMatchObject({
+      plannedMinutes: 60,
+      actualMinutes: 45,
+      varianceMinutes: -15
+    });
+  });
 });
 
 async function createHarness(taskProvider = createMemoryTaskProvider({

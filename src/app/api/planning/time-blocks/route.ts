@@ -13,6 +13,11 @@ const createTimeBlockSchema = z.object({
   note: z.string().optional()
 });
 
+const updateTimeBlockSchema = z.object({
+  id: z.string().min(1),
+  actualMinutes: z.number().int().nonnegative()
+});
+
 export async function POST(request: Request) {
   try {
     const body = createTimeBlockSchema.parse(await request.json());
@@ -23,6 +28,18 @@ export async function POST(request: Request) {
     });
 
     return Response.json(timeBlock, { status: 201 });
+  } catch (error) {
+    return errorResponse(error);
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const body = updateTimeBlockSchema.parse(await request.json());
+    const { useCases } = await getPlanningRuntime();
+    const timeBlock = await useCases.recordTimeBlockActual(body);
+
+    return Response.json(timeBlock);
   } catch (error) {
     return errorResponse(error);
   }

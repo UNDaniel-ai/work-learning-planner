@@ -12,14 +12,19 @@ export type CreateTimeBlockFormInput = {
 
 type TimeBlockGridProps = {
   blocks: TimeBlock[];
-  onCreateTimeBlock: (
+  onCreateTimeBlock?: (
     input: CreateTimeBlockFormInput
+  ) => Promise<void> | void;
+  onRecordActual?: (
+    timeBlockId: string,
+    actualMinutes: number
   ) => Promise<void> | void;
 };
 
 export function TimeBlockGrid({
   blocks,
-  onCreateTimeBlock
+  onCreateTimeBlock,
+  onRecordActual
 }: TimeBlockGridProps) {
   const [startsAt, setStartsAt] = useState("");
   const [endsAt, setEndsAt] = useState("");
@@ -28,7 +33,7 @@ export function TimeBlockGrid({
   function submitTimeBlock(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!startsAt || !endsAt) {
+    if (!onCreateTimeBlock || !startsAt || !endsAt) {
       return;
     }
 
@@ -68,10 +73,50 @@ export function TimeBlockGrid({
                   ) : null}
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-3 text-xs text-stone-500">
-                <span>{block.durationMinutes} min planned</span>
-                {block.actualMinutes !== undefined ? (
-                  <span>{block.actualMinutes} min actual</span>
+              <div className="flex shrink-0 flex-col items-end gap-2 text-xs text-stone-500">
+                <div className="flex items-center gap-3">
+                  <span>{block.durationMinutes} min planned</span>
+                  {block.actualMinutes !== undefined ? (
+                    <span>{block.actualMinutes} min actual</span>
+                  ) : null}
+                </div>
+                {onRecordActual ? (
+                  <form
+                    className="flex items-center gap-2"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      const formData = new FormData(event.currentTarget);
+                      const actualMinutes = Number(
+                        formData.get("actualMinutes")
+                      );
+
+                      if (
+                        Number.isInteger(actualMinutes) &&
+                        actualMinutes >= 0
+                      ) {
+                        void onRecordActual(block.id, actualMinutes);
+                      }
+                    }}
+                  >
+                    <label className="sr-only" htmlFor={`actual-${block.id}`}>
+                      Actual minutes for{" "}
+                      {block.note ?? formatTime(block.startsAt)}
+                    </label>
+                    <input
+                      className="h-8 w-20 rounded-md border border-stone-300 bg-white px-2 text-right text-xs text-stone-950 outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-100"
+                      defaultValue={block.actualMinutes ?? ""}
+                      id={`actual-${block.id}`}
+                      min="0"
+                      name="actualMinutes"
+                      type="number"
+                    />
+                    <button
+                      className="rounded-md border border-stone-300 bg-white px-2.5 py-1.5 text-xs font-medium text-stone-700 transition hover:border-stone-400 hover:text-stone-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+                      type="submit"
+                    >
+                      Save actual time
+                    </button>
+                  </form>
                 ) : null}
               </div>
             </li>
@@ -83,10 +128,11 @@ export function TimeBlockGrid({
         </p>
       )}
 
-      <form
-        className="grid gap-3 border-t border-stone-200 pt-4 sm:grid-cols-2"
-        onSubmit={submitTimeBlock}
-      >
+      {onCreateTimeBlock ? (
+        <form
+          className="grid gap-3 border-t border-stone-200 pt-4 sm:grid-cols-2"
+          onSubmit={submitTimeBlock}
+        >
         <div>
           <label
             className="text-xs font-medium text-stone-600"
@@ -132,16 +178,17 @@ export function TimeBlockGrid({
             value={note}
           />
         </div>
-        <div className="sm:col-span-2">
-          <button
-            className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-stone-950 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-stone-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
-            type="submit"
-          >
-            <Plus aria-hidden="true" size={16} />
-            Add time block
-          </button>
-        </div>
-      </form>
+          <div className="sm:col-span-2">
+            <button
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-stone-950 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-stone-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+              type="submit"
+            >
+              <Plus aria-hidden="true" size={16} />
+              Add time block
+            </button>
+          </div>
+        </form>
+      ) : null}
     </div>
   );
 }

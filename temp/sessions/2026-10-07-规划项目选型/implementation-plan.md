@@ -522,7 +522,7 @@
 
 ### 步骤 10：实现 Today 与 Review 闭环
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：步骤 6、步骤 8、步骤 9
 - **前置输入**：
@@ -530,35 +530,47 @@
 - **文件范围**：
   - `src/app/today/page.tsx`
   - `src/app/review/page.tsx`
+  - `src/app/api/planning/today/route.ts`
+  - `src/app/api/planning/reviews/route.ts`
+  - `src/app/api/planning/tasks/route.ts`
+  - `src/app/api/planning/time-blocks/route.ts`
+  - `src/app/api/planning/http.ts`
   - `src/components/review-form.tsx`
+  - `src/components/review-workspace.tsx`
+  - `src/components/today-workspace.tsx`
+  - `src/components/task-execution-list.tsx`
   - `src/components/time-block-grid.tsx`
+  - 相关领域、仓储、API 和组件测试
   - 相关组件测试
 - **执行模式**：subagent candidate
 - **Subagent Eligibility**：
   - 页面行为清晰，但涉及完整闭环，subagent 输出必须通过 e2e review。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] Today 显示今日任务、完成任务、记录实际投入测试先失败。
-  - [ ] Review 保存每日 / 每周复盘测试先失败。
+  - [x] Today API、任务执行和实际投入测试先失败。
+  - [x] Review API、复盘规则和复盘表单测试先失败。
 - **Verify RED**：
-  - [ ] 相关测试在实现前失败。
+  - [x] 相关 API、领域和 UI 目标测试在实现前失败，失败原因指向缺失的 route、用例或组件。
 - **Minimal Implementation**：
-  - [ ] 实现今日重点和时间块视图。
-  - [ ] 实现完成、延期和记录投入。
-  - [ ] 实现每日和每周复盘表单。
+  - [x] 实现今日重点和时间块视图。
+  - [x] 实现完成、延期和记录投入。
+  - [x] 实现每日和每周复盘表单。
 - **Verify GREEN**：
-  - [ ] Today 和 Review 测试通过。
+  - [x] Today、Review、任务执行、实际投入和复盘测试通过。
 - **验证命令**：
-  - [ ] `pnpm test`
-  - [ ] `pnpm typecheck`
+  - [x] `pnpm test src/domain/planning/use-cases.test.ts src/app/api/planning/execution-routes.test.ts src/components/time-block-grid.test.tsx src/components/task-execution-list.test.tsx src/components/review-form.test.tsx src/components/today-workspace.test.tsx src/components/review-workspace.test.tsx`
+  - [x] `pnpm lint`
+  - [x] `pnpm typecheck`
+  - [x] `pnpm test`
+  - [x] `pnpm build`
 - **预期结果**：
-  - [ ] 用户可以从周计划进入今日执行。
-  - [ ] 用户可以在复盘中记录计划偏差和下周调整建议。
+  - [x] 用户可以从周计划进入今日执行。
+  - [x] 用户可以在复盘中记录计划偏差和下周调整建议。
 - **Refactor**：
-  - [ ] 将时间格式和日期范围工具抽离到共享 helper。
+  - [x] 将 daily review 的日期范围语义收敛到领域用例，并在 repository / API 边界处理可选字段和错误映射。
 - **Step Acceptance**：
-  - [ ] 任务完成状态与 provider 状态一致。
-  - [ ] 复盘不自动修改下周计划。
+  - [x] 任务完成状态与 provider 状态一致。
+  - [x] 复盘不自动修改下周计划。
 - **并行边界**：依赖步骤 9，必须早于 e2e 完整验收。
 - **TDD 例外**：无。
 

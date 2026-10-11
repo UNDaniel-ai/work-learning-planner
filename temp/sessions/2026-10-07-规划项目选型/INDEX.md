@@ -7,6 +7,7 @@
 - 当前主文档：[progress-details.md](./progress-details.md)
 - 是否允许编码：是
 - 是否允许宣告完成：否
+- 当前执行游标：步骤 10 已完成，下一步为步骤 11
 
 ## 目标
 
@@ -22,7 +23,8 @@
 - [x] 用户确认设计方案
 - [x] 形成实现计划
 - [x] 用户确认开始编码
+- [x] 完成步骤 10：Today 与 Review 闭环
 
 ## 下一步唯一允许动作
 
-按 `implementation-plan.md` 执行步骤 10，先写 Today 与 Review 的失败测试并验证 RED，再实现今日执行、实际投入记录和复盘表单。完成验收前，不允许宣告整个项目完成。
+按 `implementation-plan.md` 执行步骤 11：实现 Settings、连接测试与 JSON 导出。完成最终验收前，不允许宣告整个项目完成。

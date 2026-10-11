@@ -9,7 +9,13 @@ export function errorResponse(error: unknown): Response {
         error: error.message,
         code: error.code
       },
-      { status: error.code === "PLANNING_PERIOD_NOT_FOUND" ? 404 : 422 }
+      {
+        status:
+          error.code === "PLANNING_PERIOD_NOT_FOUND" ||
+          error.code === "TIME_BLOCK_NOT_FOUND"
+            ? 404
+            : 422
+      }
     );
   }
 
