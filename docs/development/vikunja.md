@@ -23,6 +23,10 @@ VIKUNJA_API_TOKEN=your-api-token
 
 The app uses Bearer token authentication and never returns the token from health or connection-check API responses.
 
+The Settings page calls the connection-check endpoint from the browser and only displays the connection state and task count. The token remains server-side.
+
 ## Current Boundary
 
 Labels are read from task responses. Label writes are deferred until the UI needs them because Vikunja v2 manages labels through separate label and task-label endpoints that require label IDs.
+
+The planner JSON export contains local planning records and external task-link snapshots. It does not contain the Vikunja base URL, API token, or other process environment variables.

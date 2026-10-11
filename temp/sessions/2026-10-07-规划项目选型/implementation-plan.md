@@ -576,15 +576,20 @@
 
 ### 步骤 11：实现 Settings、连接测试与 JSON 导出
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P1
 - **依赖**：步骤 2、步骤 5、步骤 7、步骤 8
 - **前置输入**：
   - 配置、仓储和 Vikunja provider 已存在。
 - **文件范围**：
   - `src/app/settings/page.tsx`
+  - `src/components/settings-workspace.tsx`
+  - `src/components/settings-workspace.test.tsx`
   - `src/app/api/vikunja/test-connection/route.ts`
+  - `src/app/api/vikunja/test-connection/route.test.ts`
   - `src/app/api/export/route.ts`
+  - `src/app/api/export/route.test.ts`
+  - `src/lib/planning/export.ts`
   - `docs/development/setup.md`
   - `docs/development/vikunja.md`
 - **执行模式**：主会话
@@ -592,28 +597,31 @@
   - 连接和导出涉及安全边界，主会话实现。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] 连接测试 API 的成功 / 失败测试先失败。
-  - [ ] JSON 导出包含本地规划数据且不包含令牌的测试先失败。
+  - [x] Settings 连接成功 / 失败反馈测试先失败。
+  - [x] JSON 导出包含本地规划数据且不包含令牌的测试先失败。
 - **Verify RED**：
-  - [ ] 设置和导出相关测试先失败。
+  - [x] `pnpm test src/components/settings-workspace.test.tsx src/app/api/export/route.test.ts` 在实现前失败，原因是目标组件和 route 不存在。
 - **Minimal Implementation**：
-  - [ ] 设置页显示连接状态。
-  - [ ] 连接测试 API 调用 Vikunja provider。
-  - [ ] 导出本地规划数据为 JSON。
-  - [ ] 完成开发和 Vikunja 配置文档。
+  - [x] 设置页显示连接状态。
+  - [x] 连接测试 API 调用 Vikunja provider。
+  - [x] 导出本地规划数据为 JSON。
+  - [x] 完成开发和 Vikunja 配置文档。
 - **Verify GREEN**：
-  - [ ] 连接测试和导出测试通过。
+  - [x] 连接状态成功 / 失败反馈和导出测试通过。
 - **验证命令**：
-  - [ ] `pnpm test`
-  - [ ] `pnpm typecheck`
+  - [x] `pnpm test src/components/settings-workspace.test.tsx src/app/api/export/route.test.ts`
+  - [x] `pnpm lint`
+  - [x] `pnpm typecheck`
+  - [x] `pnpm test`
+  - [x] `pnpm build`
 - **预期结果**：
-  - [ ] 用户可以验证 Vikunja 连接。
-  - [ ] 用户可以导出本项目本地规划数据。
+  - [x] 用户可以验证 Vikunja 连接。
+  - [x] 用户可以导出本项目本地规划数据。
 - **Refactor**：
-  - [ ] 将导出序列化逻辑从 API route 抽离，便于测试。
+  - [x] 将导出序列化逻辑抽离到 `src/lib/planning/export.ts`。
 - **Step Acceptance**：
-  - [ ] 导出文件不包含 API token。
-  - [ ] 文档足以让用户启动应用并连接 Vikunja。
+  - [x] 导出文件不包含 API token。
+  - [x] 文档足以让用户启动应用并连接 Vikunja。
 - **并行边界**：可在步骤 9、10 后期并行；必须早于最终验收。
 - **TDD 例外**：无。
 

@@ -1,0 +1,44 @@
+# Local Setup
+
+## Requirements
+
+- Node.js 22 or newer.
+- pnpm 10.
+- A local SQLite file for planner data.
+- Vikunja is optional for the first run; without it, the app uses the memory task provider.
+
+## Install
+
+```bash
+pnpm install
+cp .env.example .env
+```
+
+For a local-only run, set the database URL in `.env`:
+
+```bash
+DATABASE_URL=file:local.db
+```
+
+Add `VIKUNJA_BASE_URL` and `VIKUNJA_API_TOKEN` only when a Vikunja instance is available. Do not commit `.env`, tokens, or the local database.
+
+## Run
+
+```bash
+pnpm dev --hostname 127.0.0.1 --port 3000
+```
+
+Open <http://127.0.0.1:3000/today>.
+
+The Settings page can test the server-side Vikunja connection and download a JSON export of local planning data. The export does not include environment variables or API tokens.
+
+## Quality Checks
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+The test suite uses an in-memory task provider and temporary SQLite files. It does not require a live Vikunja instance.

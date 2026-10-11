@@ -77,7 +77,8 @@
 - 步骤 8 已完成：App Shell、响应式导航、连接状态条和五个 MVP 页面空状态。
 - 步骤 9 已完成：Goals & Learning、Weekly Plan、planning API 页面接线和时间块分配。
 - 步骤 10 已完成：Today 与 Review 闭环、任务执行、实际投入和复盘表单。
-- 下一步：步骤 11，Settings、连接测试与 JSON 导出。
+- 步骤 11 已完成：Settings 连接状态、连接重试和本地 JSON 导出。
+- 下一步：步骤 12，端到端 MVP 验收与开发文档收束。
 
 候选 MVP 范围：
 

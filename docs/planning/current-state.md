@@ -11,22 +11,25 @@
 - 当前 Step 10 聚焦回归通过：7 个测试文件、13 个测试通过。
 - 当前质量门通过：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`。
 - 浏览器检查通过：`/today` 与 `/review` 均能加载，无运行时 API 错误。
+- 完成步骤 11：Settings 连接状态、连接重试和本地 JSON 导出。
+- Step 11 聚焦回归通过：2 个测试文件、3 个测试通过。
+- `/api/export` 返回附件下载头，实际导出内容未包含 token-like 字段。
 
 ### 当前阶段
 
 - Stage 4 - TDD Execution
 - 当前执行文档：`temp/sessions/2026-10-07-规划项目选型/progress-details.md`
-- 下一步：步骤 11 - 实现 Settings、连接测试与 JSON 导出。
+- 下一步：步骤 12 - 端到端 MVP 验收与开发文档收束。
 
 ### 当前阻塞
 
 - 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
 - 尚未实现真实 Vikunja 实例连接下的手工验收。
-- Settings、连接测试和 JSON 导出尚未实现。
+- 尚未完成最终 e2e 验收和 acceptance 文档。
 
 ### 下一步唯一允许动作
 
-继续按 `implementation-plan.md` 执行步骤 11。步骤 11 需要先写 Settings、连接测试与 JSON 导出的失败测试并验证 RED，再实现设置页、连接测试 API 和规划数据导出。
+继续按 `implementation-plan.md` 执行步骤 12：端到端 MVP 验收与开发文档收束。步骤 12 需要先写完整工作流的失败 e2e 测试并验证 RED，再完成验收和 acceptance 记录。
 
 ## 2026-10-10
 

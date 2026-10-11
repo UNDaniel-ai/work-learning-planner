@@ -6,7 +6,7 @@
 - **当前路由**: Route C
 - **当前阶段**: Stage 4 - TDD Execution
 - **执行纪律**: TDD by default；显式 `TDD 例外` 必须记录原因和替代验证
-- **当前执行游标**: 步骤 10 已完成；下一步执行步骤 11 - Settings、连接测试与 JSON 导出
+- **当前执行游标**: 步骤 11 进行中 - Settings、连接测试与 JSON 导出
 
 ## 步骤 10：实现 Today 与 Review 闭环
 
@@ -97,6 +97,84 @@
 - [x] `/today` 与 `/review` 浏览器检查无运行时错误。
 
 步骤 10 已完成。下一步进入步骤 11；当前 session 仍处于 Stage 4，尚未进入最终验收，也不允许宣告整个 MVP 完成。
+
+## 步骤 11：实现 Settings、连接测试与 JSON 导出
+
+### Step Contract
+
+- 前置输入：
+  - 步骤 7 已有服务端 Vikunja 连接测试 route。
+  - repository 已有 `exportPlanningData()`，但尚无 HTTP 导出边界。
+  - Settings 页面当前只显示静态连接说明和 JSON endpoint 链接。
+- 目标行为：
+  - Settings 页面加载并显示 Vikunja 连接状态、任务数量或安全的失败原因。
+  - 用户可以重新触发连接测试，页面不显示 API token。
+  - 用户可以下载本地规划数据 JSON，导出内容不包含 Vikunja token。
+- TDD 分类：严格 TDD。
+- 执行模式：主会话。
+- Review Contract：spec + security + quality。
+- 预期验证：
+  - Settings 组件测试先 RED，再 GREEN。
+  - Export route 测试先 RED，再 GREEN。
+  - `pnpm lint`
+  - `pnpm typecheck`
+  - `pnpm test`
+  - `pnpm build`
+
+### Verify RED
+
+- 新增目标测试：
+  - `src/components/settings-workspace.test.tsx`
+  - `src/app/api/export/route.test.ts`
+- 命令：`pnpm test src/components/settings-workspace.test.tsx src/app/api/export/route.test.ts`
+- 结果：失败，exit code 1；2 个测试文件均无法解析目标生产模块：
+  - `./settings-workspace` 尚不存在。
+  - `./route`（`/api/export`）尚不存在。
+- RED 结论：失败原因准确指向 Step 11 的当前实现切片，满足严格 TDD 的 RED 要求。
+
+### Minimal Implementation
+
+- 新增 `SettingsWorkspace`：
+  - 加载 `/api/vikunja/test-connection` 并显示 Connected / Not connected。
+  - 显示安全的任务数量和失败原因。
+  - 支持按钮重试，不在客户端展示 API token。
+- 新增 `/api/export`：
+  - 读取 repository 的 `exportPlanningData()` 快照。
+  - 返回 `work-learning-planner-export.json` 附件。
+  - 失败时返回不泄露内部细节的 500 响应。
+- 新增 `serializePlanningData`，让 JSON 序列化脱离 route，便于测试。
+- 补充 `docs/development/setup.md` 和 Vikunja 的连接 / 导出边界说明。
+
+### Verify GREEN
+
+- Step 11 目标测试：
+  - 命令：`pnpm test src/components/settings-workspace.test.tsx src/app/api/export/route.test.ts`
+  - 结果：通过，2 个测试文件、3 个测试通过。
+- 质量门：
+  - `pnpm lint`：通过，exit code 0。
+  - `pnpm typecheck`：通过，exit code 0。
+  - `pnpm test`：通过，exit code 0，24 个测试文件、54 个测试通过。
+  - `pnpm build`：通过，exit code 0；生成 `/api/export` 和 `/settings`。
+- 浏览器 / HTTP 检查：
+  - `/settings` 在 dev server 中显示 `Not connected` 和 `Vikunja configuration is incomplete.`，没有显示 token。
+  - `curl http://127.0.0.1:3000/api/export` 返回 `200`、JSON attachment header 和规划快照。
+  - 对实际导出文件执行 token-like 字段扫描，没有发现 `token` 或 `secret`。
+
+### Refactor After Green
+
+- 连接请求状态从组件事件与初始加载中抽出为共享异步状态函数，避免 React Hooks lint 的 `set-state-in-effect` 违规。
+- 导出 route 不读取 `getConfig()`，只通过 repository 快照输出，缩小凭据泄露面。
+- Settings 页面保持服务端布局、客户端状态交互的边界。
+
+### Step Acceptance
+
+- [x] 用户可以从 Settings 触发 Vikunja 连接检查。
+- [x] 连接成功时显示任务数量，失败时显示安全错误原因。
+- [x] 用户可以下载本地规划数据 JSON。
+- [x] 导出内容不包含 API token 或环境变量。
+- [x] 设置和导出相关文档已补齐。
+
+步骤 11 已完成。下一步进入步骤 12；当前 session 仍处于 Stage 4，尚未进入最终验收，也不允许宣告整个 MVP 完成。
 
 ## Stage 4 入口记录
 
