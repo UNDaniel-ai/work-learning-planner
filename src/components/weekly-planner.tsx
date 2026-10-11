@@ -114,8 +114,8 @@ export function WeeklyPlanner({ anchorDate = getTodayDate() }: WeeklyPlannerProp
     });
 
     setPlanningPeriods((currentPeriods) => [
-      ...currentPeriods.filter((item) => item.id !== period.id),
-      period
+      period,
+      ...currentPeriods.filter((item) => item.id !== period.id)
     ]);
     setSelectedGoalIds(period.focusGoalIds);
     setError(undefined);

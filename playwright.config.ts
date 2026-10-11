@@ -6,10 +6,11 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: "http://127.0.0.1:3000",
+    channel: process.env.CI ? undefined : "chrome",
     trace: "on-first-retry"
   },
   webServer: {
-    command: "pnpm dev",
+    command: "DATABASE_URL=file:local.db pnpm dev",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI
   },

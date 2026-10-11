@@ -39,6 +39,9 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm e2e
 ```
 
-The test suite uses an in-memory task provider and temporary SQLite files. It does not require a live Vikunja instance.
+The unit and component test suite uses an in-memory task provider and temporary SQLite files. It does not require a live Vikunja instance.
+
+Local e2e uses the installed Google Chrome channel to avoid downloading a second browser through a VPN. CI uses the Playwright-managed Chromium channel.

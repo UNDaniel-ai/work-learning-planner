@@ -158,6 +158,26 @@ describe("planning use cases", () => {
     await expect(repository.listTaskLinks()).resolves.toEqual([]);
   });
 
+  it("reuses the existing weekly period when saving the same week again", async () => {
+    const { repository, useCases } = await createHarness();
+
+    const firstPeriod = await useCases.createWeeklyPlan({
+      id: "period-first",
+      anchorDate: "2026-10-09",
+      focusGoalIds: []
+    });
+    const secondPeriod = await useCases.createWeeklyPlan({
+      id: "period-second",
+      anchorDate: "2026-10-10",
+      focusGoalIds: []
+    });
+
+    expect(secondPeriod.id).toBe(firstPeriod.id);
+    await expect(repository.listPlanningPeriods()).resolves.toEqual([
+      firstPeriod
+    ]);
+  });
+
   it("records actual minutes and scopes daily reviews to one date", async () => {
     const { repository, useCases } = await createHarness();
     const workArea: Area = {

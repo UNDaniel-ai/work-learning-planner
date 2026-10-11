@@ -14,22 +14,25 @@
 - 完成步骤 11：Settings 连接状态、连接重试和本地 JSON 导出。
 - Step 11 聚焦回归通过：2 个测试文件、3 个测试通过。
 - `/api/export` 返回附件下载头，实际导出内容未包含 token-like 字段。
+- 完成步骤 12：端到端 MVP 验收路径与开发文档收束。
+- 最终 e2e 通过：1 个浏览器测试通过，并验证重复运行不会产生 period 分叉。
+- `docs/development/testing.md` 和 `temp/sessions/2026-10-07-规划项目选型/acceptance.md` 已建立。
 
 ### 当前阶段
 
-- Stage 4 - TDD Execution
+- Stage 4 已完成，等待 Stage 5 - Acceptance
 - 当前执行文档：`temp/sessions/2026-10-07-规划项目选型/progress-details.md`
-- 下一步：步骤 12 - 端到端 MVP 验收与开发文档收束。
+- 下一步：确认进入验收阶段，逐项确认 `temp/sessions/2026-10-07-规划项目选型/acceptance.md`。
 
 ### 当前阻塞
 
 - 尚未准备真实 Vikunja 实例；实现可先使用 mock / memory provider。
 - 尚未实现真实 Vikunja 实例连接下的手工验收。
-- 尚未完成最终 e2e 验收和 acceptance 文档。
+- 尚未获得用户对 Stage 5 的明确确认。
 
 ### 下一步唯一允许动作
 
-继续按 `implementation-plan.md` 执行步骤 12：端到端 MVP 验收与开发文档收束。步骤 12 需要先写完整工作流的失败 e2e 测试并验证 RED，再完成验收和 acceptance 记录。
+请用户明确回复“确认进入验收阶段”，然后按 `acceptance.md` 逐项确认 MVP；在此之前不继续修改产品代码，也不宣告整个项目完成。
 
 ## 2026-10-10
 

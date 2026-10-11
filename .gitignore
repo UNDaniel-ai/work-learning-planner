@@ -17,6 +17,7 @@ build/
 .next/
 coverage/
 tsconfig.tsbuildinfo
+test-results/
 
 # Local runtime data
 data/

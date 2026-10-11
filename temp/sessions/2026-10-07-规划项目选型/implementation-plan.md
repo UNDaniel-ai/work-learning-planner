@@ -4,7 +4,7 @@
 
 - **创建时间**: 2026-10-08 19:45 CST
 - **当前路由**: Route C
-- **当前阶段**: Stage 4 - TDD Execution
+- **当前阶段**: Stage 4 已完成，等待 Stage 5 - Acceptance
 - **计划状态**: 已确认，进入 Stage 4 执行
 - **设计依据**: [design.md](./design.md)
 
@@ -627,7 +627,7 @@
 
 ### 步骤 12：端到端 MVP 验收与开发文档收束
 
-- **状态**：待开始
+- **状态**：已完成
 - **优先级**：P0
 - **依赖**：步骤 1-11
 - **前置输入**：
@@ -643,33 +643,36 @@
   - 最终验收需要整合所有证据，主会话执行。
 - **Review Contract**：spec + quality
 - **Failing Test**：
-  - [ ] e2e 测试覆盖创建目标、学习主题、周计划、今日执行、复盘和导出，初始失败。
+  - [x] `pnpm e2e` 在尚无 e2e 文件时失败并报告 `No tests found`。
 - **Verify RED**：
-  - [ ] `pnpm e2e` 在功能未完整前失败。
+  - [x] 记录验收入口 RED，并补充 MVP 主流程 e2e。
 - **Minimal Implementation**：
-  - [ ] 完成 e2e 测试。
-  - [ ] 修复 e2e 暴露的问题。
-  - [ ] 更新 README 的运行、测试和验收说明。
-  - [ ] 写入 `progress-details.md` 与 `acceptance.md`。
+  - [x] 完成 e2e 测试。
+  - [x] 修复重复周计划导致时间块落入错误 period 的问题。
+  - [x] 更新 README、setup 和 testing 文档的运行、测试和验收说明。
+  - [x] 写入 `progress-details.md` 与 `acceptance.md` 草案。
 - **Verify GREEN**：
-  - [ ] `pnpm lint` 通过。
-  - [ ] `pnpm typecheck` 通过。
-  - [ ] `pnpm test` 通过。
-  - [ ] `pnpm e2e` 通过。
+  - [x] `pnpm lint` 通过。
+  - [x] `pnpm typecheck` 通过。
+  - [x] `pnpm test` 通过。
+  - [x] `pnpm e2e` 通过。
+  - [x] `pnpm build` 通过。
 - **验证命令**：
-  - [ ] `pnpm lint`
-  - [ ] `pnpm typecheck`
-  - [ ] `pnpm test`
-  - [ ] `pnpm e2e`
+  - [x] `pnpm lint`
+  - [x] `pnpm typecheck`
+  - [x] `pnpm test`
+  - [x] `pnpm e2e`
+  - [x] `pnpm build`
 - **预期结果**：
-  - [ ] MVP 从目标创建到周复盘的完整路径可运行。
-  - [ ] 验收文档包含 fresh verification evidence。
+  - [x] MVP 从目标创建到周复盘和导出的完整路径可运行。
+  - [x] 验收文档包含 fresh verification evidence。
 - **Refactor**：
-  - [ ] 清理测试辅助函数和重复 UI 状态。
+  - [x] e2e 使用唯一数据和空闲时间段，支持重复运行。
+  - [x] 同周计划保存复用已有 period，避免重复 period 分叉。
 - **Step Acceptance**：
-  - [ ] 所有质量门通过。
-  - [ ] README 能指导本地运行。
-  - [ ] `acceptance.md` 支撑 MVP 完成声明。
+  - [x] 所有质量门通过。
+  - [x] README 能指导本地运行。
+  - [x] `acceptance.md` 支撑后续 Stage 5 MVP 完成确认。
 - **并行边界**：必须最后执行。
 - **TDD 例外**：无。
 

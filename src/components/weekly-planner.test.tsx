@@ -149,6 +149,70 @@ describe("WeeklyPlanner", () => {
     expect(screen.getByLabelText("Focus Ship planner MVP")).toBeChecked();
     expect(screen.getByText("1.5h")).toBeVisible();
   });
+
+  it("keeps the saved period selected when an older period is already listed", async () => {
+    const olderPeriod: PlanningPeriod = {
+      ...period,
+      id: "period-older",
+      focusGoalIds: []
+    };
+    const savedPeriod: PlanningPeriod = {
+      ...period,
+      id: "period-saved",
+      focusGoalIds: ["goal-1"]
+    };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        jsonResponse({
+          areas: [],
+          goals: [goal],
+          learningTopics: []
+        })
+      )
+      .mockResolvedValueOnce(jsonResponse({ tasks: [] }))
+      .mockResolvedValueOnce(
+        jsonResponse({ planningPeriods: [olderPeriod], timeBlocks: [] })
+      )
+      .mockResolvedValueOnce(jsonResponse(savedPeriod, 201))
+      .mockResolvedValueOnce(jsonResponse(timeBlock, 201));
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<WeeklyPlanner anchorDate="2026-10-07" />);
+
+    expect(await screen.findByText("Ship planner MVP")).toBeVisible();
+    fireEvent.click(screen.getByLabelText("Focus Ship planner MVP"));
+    fireEvent.click(screen.getByRole("button", { name: "Create weekly plan" }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/planning/weekly",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+
+    fireEvent.change(await screen.findByLabelText("Start"), {
+      target: { value: "09:00" }
+    });
+    fireEvent.change(screen.getByLabelText("End"), {
+      target: { value: "10:30" }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Add time block" }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/planning/time-blocks",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+    expect(JSON.parse(fetchMock.mock.calls[4][1]?.body as string)).toEqual({
+      periodId: "period-saved",
+      areaId: "area-work",
+      startsAt: "2026-10-07T09:00:00.000Z",
+      endsAt: "2026-10-07T10:30:00.000Z",
+      note: undefined
+    });
+  });
 });
 
 function jsonResponse(body: unknown, status = 200): Response {

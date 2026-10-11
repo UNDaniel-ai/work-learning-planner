@@ -144,8 +144,16 @@ export function createPlanningUseCases(input: CreatePlanningUseCasesInput) {
     async createWeeklyPlan(
       planInput: CreateWeeklyPlanUseCaseInput
     ): Promise<PlanningPeriod> {
+      const existingPeriod = (
+        await repository.listPlanningPeriods()
+      ).find(
+        (period) =>
+          period.type === "week" &&
+          period.startsOn <= planInput.anchorDate &&
+          planInput.anchorDate <= period.endsOn
+      );
       const period = createWeeklyPlanningPeriod({
-        id: planInput.id,
+        id: existingPeriod?.id ?? planInput.id,
         anchorDate: planInput.anchorDate,
         focusGoalIds: planInput.focusGoalIds
       });
@@ -163,7 +171,11 @@ export function createPlanningUseCases(input: CreatePlanningUseCasesInput) {
         await repository.createTaskLink(taskLink);
       }
 
-      await repository.createPlanningPeriod(periodWithTasks);
+      if (existingPeriod) {
+        await repository.updatePlanningPeriod(periodWithTasks);
+      } else {
+        await repository.createPlanningPeriod(periodWithTasks);
+      }
 
       return periodWithTasks;
     },

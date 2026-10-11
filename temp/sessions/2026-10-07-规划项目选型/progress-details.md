@@ -4,9 +4,9 @@
 
 - **创建时间**: 2026-10-08 19:59 CST
 - **当前路由**: Route C
-- **当前阶段**: Stage 4 - TDD Execution
+- **当前阶段**: Stage 4 已完成，等待 Stage 5 - Acceptance
 - **执行纪律**: TDD by default；显式 `TDD 例外` 必须记录原因和替代验证
-- **当前执行游标**: 步骤 11 进行中 - Settings、连接测试与 JSON 导出
+- **当前执行游标**: 步骤 12 已完成，等待 Stage 5 确认
 
 ## 步骤 10：实现 Today 与 Review 闭环
 
@@ -175,6 +175,76 @@
 - [x] 设置和导出相关文档已补齐。
 
 步骤 11 已完成。下一步进入步骤 12；当前 session 仍处于 Stage 4，尚未进入最终验收，也不允许宣告整个 MVP 完成。
+
+## 步骤 12：端到端 MVP 验收与开发文档收束
+
+### Step Contract
+
+- 前置输入：
+  - 步骤 1-11 已完成，核心页面、API、规划领域、Vikunja adapter 和导出均存在。
+  - 本地 dev server 可在没有 Vikunja 的情况下使用 memory task provider。
+- 目标行为：
+  - 通过一条真实浏览器路径创建目标和学习主题。
+  - 建立本周计划、时间块，进入 Today 记录实际投入。
+  - 进入 Review 保存复盘，并从 Settings 下载规划数据。
+- TDD 分类：严格 TDD。
+- 执行模式：主会话。
+- Review Contract：spec + integration + quality。
+- 预期验证：
+  - `pnpm e2e`
+  - `pnpm lint`
+  - `pnpm typecheck`
+  - `pnpm test`
+  - `pnpm build`
+
+### Verify RED
+
+- 命令：`pnpm e2e`
+- 结果：失败，exit code 1，Playwright 报告 `No tests found`。
+- RED 结论：仓库尚无端到端验收路径；下一步先补齐覆盖 MVP 主流程的 e2e 测试。
+
+### Debugging Note
+
+- 症状：第一次 e2e 可以完成时间块创建；重复运行时 POST 仍返回 201，但随后 `/today` 看不到刚创建的时间块。
+- 复现证据：
+  - `/api/planning/weekly` 返回同一周的多个 `planningPeriods`。
+  - 最新创建的时间块挂在某个 period 上，而 `/api/planning/today` 按列表第一个 period 读取，因此返回空 `timeBlocks`。
+- 根因：weekly plan 保存总是插入新 period；页面和 Today route 对重复周计划没有共同的唯一语义。
+- 假设验证：同一周复用已有 period，并让时间块继续写入该 period，可消除重复运行中的 period 分叉。
+- 防御性修复：新增领域回归测试，要求同一周第二次保存返回原 period 且数据库只保留一个周计划。
+
+### Minimal Implementation
+
+- 新增 `e2e/mvp.spec.ts`，覆盖目标、学习主题、周计划、时间块、Today、Review 和导出。
+- Playwright 本地使用系统 Chrome，CI 使用 Playwright 管理的 Chromium。
+- 修复同周重复保存：
+  - use case 复用当前日期所属的已有周 period。
+  - repository 替换 period 的 focus goals / task links。
+  - Weekly UI 将刚保存的 period 放到当前选择首位。
+- 补充 `docs/development/testing.md` 和 `acceptance.md` 草案。
+
+### Verify GREEN
+
+- `pnpm e2e`：通过，1 个测试、1 个 Chromium 项目通过；重复运行验证通过。
+- `pnpm lint`：通过，exit code 0。
+- `pnpm typecheck`：通过，exit code 0。
+- `pnpm test`：通过，exit code 0，24 个测试文件、56 个测试通过。
+- `pnpm build`：通过，exit code 0，生成 18 个 app routes。
+
+### Refactor After Green
+
+- e2e 为时间块选择当前日期的空闲小时，并把操作限定在唯一 note 对应的 list item，支持重复运行。
+- 将重复周计划的 period 选择规则放入领域用例，避免 Today、Weekly 各自猜测“当前 period”。
+- 保持 acceptance 文档为草案，等待 Stage 5 用户确认后再转正式验收结论。
+
+### Step Acceptance
+
+- [x] MVP 主流程可通过真实浏览器从目标走到导出。
+- [x] 重复运行不会因旧时间块或旧周计划造成 period 分叉。
+- [x] e2e、lint、typecheck、unit/component/API tests、build 均有 fresh evidence。
+- [x] 开发运行与测试文档已补齐。
+
+步骤 12 已完成。Stage 4 已结束；下一步唯一动作是用户确认进入 Stage 5 Acceptance。当前不允许宣告整个 MVP 完成。
 
 ## Stage 4 入口记录
 

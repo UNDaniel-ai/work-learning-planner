@@ -97,23 +97,20 @@ export function createPlanningRepository(db: PlannerDatabase) {
         endsOn: period.endsOn
       });
 
-      if (period.focusGoalIds.length > 0) {
-        await db.insert(planningPeriodFocusGoals).values(
-          period.focusGoalIds.map((goalId) => ({
-            periodId: period.id,
-            goalId
-          }))
-        );
-      }
+      await replacePlanningPeriodLinks(db, period);
+    },
 
-      if (period.taskLinkIds.length > 0) {
-        await db.insert(planningPeriodTaskLinks).values(
-          period.taskLinkIds.map((taskLinkId) => ({
-            periodId: period.id,
-            taskLinkId
-          }))
-        );
-      }
+    async updatePlanningPeriod(period: PlanningPeriod): Promise<void> {
+      await db
+        .update(planningPeriods)
+        .set({
+          type: period.type,
+          startsOn: period.startsOn,
+          endsOn: period.endsOn
+        })
+        .where(eq(planningPeriods.id, period.id));
+
+      await replacePlanningPeriodLinks(db, period);
     },
 
     async getPlanningPeriod(
@@ -337,4 +334,34 @@ function normalizeUndefined<T extends Record<string, unknown>>(
 
 function toSyncCursor(row: typeof syncCursors.$inferSelect): SyncCursor {
   return normalizeUndefined(row) as SyncCursor;
+}
+
+async function replacePlanningPeriodLinks(
+  db: PlannerDatabase,
+  period: PlanningPeriod
+): Promise<void> {
+  await db
+    .delete(planningPeriodFocusGoals)
+    .where(eq(planningPeriodFocusGoals.periodId, period.id));
+  await db
+    .delete(planningPeriodTaskLinks)
+    .where(eq(planningPeriodTaskLinks.periodId, period.id));
+
+  if (period.focusGoalIds.length > 0) {
+    await db.insert(planningPeriodFocusGoals).values(
+      period.focusGoalIds.map((goalId) => ({
+        periodId: period.id,
+        goalId
+      }))
+    );
+  }
+
+  if (period.taskLinkIds.length > 0) {
+    await db.insert(planningPeriodTaskLinks).values(
+      period.taskLinkIds.map((taskLinkId) => ({
+        periodId: period.id,
+        taskLinkId
+      }))
+    );
+  }
 }

@@ -6,12 +6,12 @@
 
 ## 当前状态
 
-- 当前阶段：Stage 4 - TDD Execution
+- 当前阶段：Stage 4 已完成，等待 Stage 5 Acceptance
 - 当前路线：Route C
 - 当前推荐方向：`Vikunja` 作为任务底座，叠加个人工作学习规划层
-- 是否允许编码：是
-- 最近完成：步骤 11，Settings、连接测试与 JSON 导出
-- 下一步：执行步骤 12，端到端 MVP 验收与开发文档收束
+- 是否允许编码：否
+- 最近完成：步骤 12，端到端 MVP 验收路径与开发文档收束
+- 下一步：确认进入验收阶段，逐项确认 `acceptance.md`
 
 ## 目标
 
@@ -79,4 +79,5 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm e2e
 ```

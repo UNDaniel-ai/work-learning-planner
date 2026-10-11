@@ -3,11 +3,11 @@
 ## 当前状态
 
 - 当前路由：Route C（多方案研究与后续产品化）
-- 当前阶段：Stage 4 - TDD Execution
+- 当前阶段：Stage 4 已完成，等待进入 Stage 5 - Acceptance
 - 当前主文档：[progress-details.md](./progress-details.md)
-- 是否允许编码：是
+- 是否允许编码：否
 - 是否允许宣告完成：否
-- 当前执行游标：步骤 11 已完成，下一步为步骤 12
+- 当前执行游标：步骤 12 已完成，等待 Stage 5 确认
 
 ## 目标
 
@@ -24,7 +24,9 @@
 - [x] 形成实现计划
 - [x] 用户确认开始编码
 - [x] 完成步骤 10：Today 与 Review 闭环
+- [x] 完成步骤 11：Settings、连接测试与 JSON 导出
+- [x] 完成步骤 12：端到端 MVP 验收路径与开发文档
 
 ## 下一步唯一允许动作
 
-按 `implementation-plan.md` 执行步骤 11：实现 Settings、连接测试与 JSON 导出。完成最终验收前，不允许宣告整个项目完成。
+请用户明确回复“确认进入验收阶段”，然后进入 Stage 5，按 [acceptance.md](./acceptance.md) 逐项确认 MVP。确认前不继续修改产品代码，也不宣告整个项目完成。
