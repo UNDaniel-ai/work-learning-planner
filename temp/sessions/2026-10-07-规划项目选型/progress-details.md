@@ -4,9 +4,53 @@
 
 - **创建时间**: 2026-10-08 19:59 CST
 - **当前路由**: Route C
-- **当前阶段**: Stage 4 已完成，等待 Stage 5 - Acceptance
+- **当前阶段**: Stage 5 - Acceptance 已完成，等待 Stage 6 - Session Closeout
 - **执行纪律**: TDD by default；显式 `TDD 例外` 必须记录原因和替代验证
-- **当前执行游标**: 步骤 12 已完成，等待 Stage 5 确认
+- **当前执行游标**: Stage 5 条件性通过，等待用户确认进入 Stage 6
+
+## Stage 5：Acceptance
+
+### 入口确认
+
+- **AI 发起确认消息**：当前 Stage 4 已完成；请明确回复“确认进入验收阶段”，然后按 `acceptance.md` 逐项验收 MVP。确认前不继续修改产品代码，也不宣告整个项目完成。
+- **用户确认原话**：确认进入验收阶段
+- **确认时间**：2026-10-11 12:23:17 CST
+
+### 验收执行合同
+
+- **范围**：目标 / 学习主题 -> 周计划 -> 时间块 -> Today 实际投入 -> Review -> Settings JSON 导出。
+- **质量门**：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`、`pnpm e2e`。
+- **人工检查**：`/today`、`/weekly`、`/goals`、`/review`、`/settings`，以及无真实 Vikunja 配置时的安全失败状态。
+- **证据要求**：只接受当前 Stage 5 执行窗口中的命令输出、exit code 和浏览器观察；Stage 4 的通过记录仅作为背景。
+- **完成声明**：本阶段未完成前禁止宣告整个项目完成；Stage 6 仍需用户确认。
+
+### Fresh Verification Results
+
+- **执行窗口**：2026-10-11 12:25-12:33 CST。
+- `pnpm lint`：通过，exit code 0。
+- `pnpm typecheck`：通过，exit code 0。
+- `pnpm test`：通过，exit code 0；24 个测试文件、56 个测试通过。
+- `pnpm build`：通过，exit code 0；Next.js 16.4.0 生成 18 个 app routes。
+- `pnpm e2e`：通过，exit code 0；1 个 Chromium 项目测试通过，耗时约 1.9 秒。
+- `git diff --check`：通过，exit code 0。
+
+### Browser And HTTP Acceptance
+
+- `/today`：加载成功，显示计划投入、Today 时间块和优先任务区域。
+- `/weekly`：加载成功，显示当前周计划、focus 选择、容量和时间块表单。
+- `/goals`：加载成功，显示工作目标、学习主题和创建表单。
+- `/review`：加载成功，显示 weekly review 表单与历史复盘。
+- `/settings`：加载成功，连接状态为 `Not connected`，显示安全错误原因；点击 `Test connection` 后状态仍安全可见。
+- `/api/health`：HTTP 200，报告应用健康但 `vikunjaConfigured: false`。
+- `/api/vikunja/test-connection`：HTTP 503，返回 `Vikunja configuration is incomplete.`，没有凭据字段。
+- `/api/export`：HTTP 200，返回 `work-learning-planner-export.json` 附件；响应体 11,109 字节，token-like 字段扫描为空。
+
+### Stage 5 结论
+
+- 本地 MVP 主流程条件性通过。
+- 未验证项：真实 Vikunja 实例的连接、任务读取、完成和延期。
+- 残余风险：本地 e2e 复用被 Git 忽略的 `local.db`，重复运行会留下 E2E 示例记录；自动化测试数据库隔离尚未完成。
+- Stage 5 已完成；不宣告整个项目完成，等待用户确认进入 Stage 6。
 
 ## 步骤 10：实现 Today 与 Review 闭环
 
