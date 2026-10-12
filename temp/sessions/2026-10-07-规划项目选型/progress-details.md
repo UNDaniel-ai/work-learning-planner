@@ -82,6 +82,21 @@
   - 带 `Cookie: planner_database_mode=test` 时返回 `currentMode: test`。
   - `local.db` 中 E2E goal/topic 计数保持 10/9；`local.test.db` 中 E2E goal/topic 计数为 2/2，说明新的回归数据进入测试库。
 
+### Personal Database Cleanup
+
+- 用户请求：清理 Personal database 中由 E2E 回归产生的数据。
+- 备份：已创建 `temp/backups/local-before-e2e-clean-20261012-213622.db`。
+- 清理范围：
+  - 清空 `reviews`、`time_blocks`、`planning_period_focus_goals`、`planning_period_task_links`、`planning_periods`、`task_links`、`goals`、`learning_topics`、`sync_cursors`。
+  - 保留默认 `areas`，即 Work / Learning。
+- 验证结果：
+  - `areas`: 2。
+  - `goals`、`learning_topics`、`planning_periods`、`time_blocks`、`reviews`、`task_links`、`sync_cursors`: 0。
+  - E2E goal/topic 计数均为 0。
+  - `/api/settings/database` 返回 `currentMode: personal`。
+  - `/api/planning/goals` 返回默认 areas，goals 与 learningTopics 为空。
+  - `/api/planning/weekly` 返回 planningPeriods 与 timeBlocks 为空。
+
 ## 步骤 10：实现 Today 与 Review 闭环
 
 ### Step Contract
