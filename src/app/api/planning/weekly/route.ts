@@ -19,9 +19,9 @@ const createWeeklyPlanSchema = z.object({
   tasks: z.array(taskSchema).default([])
 });
 
-export async function GET() {
+export async function GET(request?: Request) {
   try {
-    const { repository } = await getPlanningRuntime();
+    const { repository } = await getPlanningRuntime(request);
 
     return Response.json({
       planningPeriods: await repository.listPlanningPeriods(),
@@ -35,7 +35,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = createWeeklyPlanSchema.parse(await request.json());
-    const { useCases } = await getPlanningRuntime();
+    const { useCases } = await getPlanningRuntime(request);
     const period = await useCases.createWeeklyPlan({
       id: randomUUID(),
       anchorDate: body.anchorDate,

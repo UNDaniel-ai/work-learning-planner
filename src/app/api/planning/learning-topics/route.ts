@@ -9,9 +9,9 @@ const createLearningTopicSchema = z.object({
   progressPercent: z.number().min(0).max(100).default(0)
 });
 
-export async function GET() {
+export async function GET(request?: Request) {
   try {
-    const { repository } = await getPlanningRuntime();
+    const { repository } = await getPlanningRuntime(request);
 
     return Response.json({
       areas: await repository.listAreas(),
@@ -25,7 +25,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = createLearningTopicSchema.parse(await request.json());
-    const { useCases } = await getPlanningRuntime();
+    const { useCases } = await getPlanningRuntime(request);
     const topic = await useCases.createLearningTopic({
       id: randomUUID(),
       areaId: body.areaId,

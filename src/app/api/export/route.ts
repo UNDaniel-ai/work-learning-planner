@@ -1,9 +1,9 @@
 import { getPlanningRuntime } from "../../../lib/planning/runtime";
 import { serializePlanningData } from "../../../lib/planning/export";
 
-export async function GET() {
+export async function GET(request?: Request) {
   try {
-    const runtime = await getPlanningRuntime();
+    const runtime = await getPlanningRuntime(request);
     const data = await runtime.repository.exportPlanningData();
 
     return new Response(serializePlanningData(data), {

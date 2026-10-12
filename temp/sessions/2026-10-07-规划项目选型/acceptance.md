@@ -4,7 +4,7 @@
 
 - **当前路由**：Route C
 - **当前阶段**：Stage 5 - Acceptance 已完成
-- **验收状态**：条件性通过，等待用户确认进入 Stage 6 - Session Closeout
+- **验收状态**：本地 MVP 通过，等待用户确认进入 Stage 6 - Session Closeout
 - **进入 Stage 5 时间**：2026-10-11 12:23:17 CST
 - **用户确认原话**：确认进入验收阶段
 - **完成声明**：禁止，直到本记录完成且用户确认进入 Stage 6
@@ -31,6 +31,7 @@
 | 主要页面可加载且无明显运行时错误 | 浏览器检查 `/today`、`/weekly`、`/goals`、`/review`、`/settings` | 通过 |
 | 导出不泄露凭据 | `/api/export` 响应头、响应体和 token-like 字段扫描 | 通过 |
 | Vikunja 连接失败可安全呈现 | `/settings` 页面与 `/api/vikunja/test-connection` 的无配置路径 | 通过 |
+| E2E 不污染个人数据库 | Settings 数据库模式开关、`pnpm e2e`、SQLite 记录计数 | 通过 |
 
 ## Fresh Verification Evidence
 
@@ -44,6 +45,12 @@
 - `pnpm build`：通过，exit code 0；Next.js 16.4.0 成功构建并生成 18 个 app routes。
 - `pnpm e2e`：通过，exit code 0；`e2e/mvp.spec.ts` 的 1 个 Chromium 项目测试通过，耗时约 1.9 秒。
 - `git diff --check`：通过，exit code 0。
+- 验收后修复补充：
+  - `pnpm test src/lib/config.test.ts src/app/api/settings/database/route.test.ts src/components/settings-workspace.test.tsx`：通过，3 个测试文件、8 个测试通过。
+  - `pnpm test`：通过，25 个测试文件、60 个测试通过。
+  - `pnpm typecheck`：通过，exit code 0。
+  - `pnpm build`：通过，exit code 0；新增 `/api/settings/database`，共生成 19 个 app routes。
+  - `pnpm e2e`：通过，exit code 0；E2E 先在 Settings 切换到 test database。
 
 ### e2e 场景
 
@@ -63,6 +70,8 @@
 - `/api/export` 返回 HTTP 200、`content-disposition: attachment; filename="work-learning-planner-export.json"`，导出体 11,109 字节，token-like 字段扫描为空。
 - JSON 导出不读取环境变量；连接 token 只在服务端使用。
 - 同一周重复保存不会再创建新的 planning period，避免 Today 与 Weekly 指向不同 period。
+- `/api/settings/database` 默认返回 `currentMode: personal`，带 `planner_database_mode=test` cookie 时返回 `currentMode: test`。
+- E2E 修复后，`local.db` 中 E2E goal/topic 计数保持 10/9，`local.test.db` 随回归增长到 2/2，证明新回归数据落在测试库。
 
 ## 人工验收与已知限制
 
@@ -72,8 +81,8 @@
 - 尚未使用真实 Vikunja 实例完成连接、任务读取、完成和延期的人工验收。
 - 当前本地 e2e 使用系统 Google Chrome；CI 使用 Playwright 管理的 Chromium。
 - provider contract 与 Vikunja adapter 由 mocked tests 覆盖；真实 Vikunja 连接仍是未执行的手工验收项。
-- 本地 e2e 使用被 Git 忽略的 `local.db`，重复运行会留下 E2E 示例记录；测试数据库隔离尚未自动化。
+- `local.db` 里仍保留修复前产生的 E2E 示例记录；本次未自动删除历史数据，避免误删用户数据。
 
 ## Stage 5 结论
 
-Stage 5 条件性通过：本地规划 MVP 的自动化质量门、浏览器主流程、五个主页面和无 Vikunja 配置时的安全边界均已通过当前阶段 fresh verification。真实 Vikunja 实例未配置，因此外部任务读取、完成、延期和真实连接恢复不属于本次已验证范围。下一步仍需用户确认进入 Stage 6，生成 session 总结并完成治理询问。
+Stage 5 通过：本地规划 MVP 的自动化质量门、浏览器主流程、五个主页面、无 Vikunja 配置时的安全边界，以及 E2E / 个人数据库隔离均已通过当前阶段 fresh verification。真实 Vikunja 实例未配置，因此外部任务读取、完成、延期和真实连接恢复不属于本次已验证范围。下一步仍需用户确认进入 Stage 6，生成 session 总结并完成治理询问。

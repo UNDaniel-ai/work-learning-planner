@@ -6,7 +6,7 @@
 - **当前路由**: Route C
 - **当前阶段**: Stage 5 - Acceptance 已完成，等待 Stage 6 - Session Closeout
 - **执行纪律**: TDD by default；显式 `TDD 例外` 必须记录原因和替代验证
-- **当前执行游标**: Stage 5 条件性通过，等待用户确认进入 Stage 6
+- **当前执行游标**: Stage 5 验收后数据库隔离修复已完成，等待用户确认进入 Stage 6
 
 ## Stage 5：Acceptance
 
@@ -47,10 +47,40 @@
 
 ### Stage 5 结论
 
-- 本地 MVP 主流程条件性通过。
+- 本地 MVP 主流程通过。
 - 未验证项：真实 Vikunja 实例的连接、任务读取、完成和延期。
-- 残余风险：本地 e2e 复用被 Git 忽略的 `local.db`，重复运行会留下 E2E 示例记录；自动化测试数据库隔离尚未完成。
+- 验收后修复：本地 e2e 已通过 Settings 切换到 test database，不再写入个人数据库。
+- 残余风险：`local.db` 里仍有修复前的 E2E 示例记录，本次未自动删除历史数据。
 - Stage 5 已完成；不宣告整个项目完成，等待用户确认进入 Stage 6。
+
+### 验收后修复：隔离 E2E 测试数据库
+
+- 用户反馈：个人使用数据库里出现大量 E2E 回归数据，希望 Settings 增加开关区分测试库和实际使用库。
+- Root cause：`getPlanningRuntime()` 只按 `DATABASE_URL` 创建全局单例；Playwright 也以 `DATABASE_URL=file:local.db` 启动，因此 E2E 与日常使用共享同一 SQLite 文件。
+- Verify RED：
+  - `pnpm test src/lib/config.test.ts src/app/api/settings/database/route.test.ts src/components/settings-workspace.test.tsx`：失败，配置层缺少 `testDatabaseUrl`，`/api/settings/database` 不存在，Settings UI 缺少 switch。
+  - `pnpm e2e`：失败，找不到 `Use test database` switch。
+- Minimal implementation：
+  - 配置层新增 `TEST_DATABASE_URL`，本地 file URL 可自动派生 `.test` 数据库。
+  - 新增 `planner_database_mode` cookie，personal/test 两个数据库 runtime 独立缓存。
+  - 新增 `/api/settings/database`，Settings 页面新增 `Use test database` 开关。
+  - 所有 planning API 和 export API 按请求 cookie 选择 active database。
+  - E2E 主流程开始时先在 Settings 切到 test database。
+- Debugging note：
+  - 首次 e2e 修复后超时，原因是 Playwright 对 `sr-only` switch input 执行 `check()` 会等待可操作性；改为点击可见 label 文本并断言 switch checked。
+  - 一次并行运行 `pnpm typecheck` 与 `pnpm build` 导致 `.next` 生成类型竞争；后续验证改为串行执行。
+- Verify GREEN：
+  - 聚焦测试：通过，3 个测试文件、8 个测试通过。
+  - `pnpm lint`：通过，exit code 0。
+  - `pnpm typecheck`：通过，exit code 0。
+  - `pnpm test`：通过，25 个测试文件、60 个测试通过。
+  - `pnpm build`：通过，新增 `/api/settings/database`，共生成 19 个 app routes。
+  - `pnpm e2e`：通过，1 个 Chromium 项目测试通过，耗时约 1.9 秒。
+  - `git diff --check`：通过，exit code 0。
+- 数据隔离证据：
+  - `/api/settings/database` 默认返回 `currentMode: personal`。
+  - 带 `Cookie: planner_database_mode=test` 时返回 `currentMode: test`。
+  - `local.db` 中 E2E goal/topic 计数保持 10/9；`local.test.db` 中 E2E goal/topic 计数为 2/2，说明新的回归数据进入测试库。
 
 ## 步骤 10：实现 Today 与 Review 闭环
 

@@ -7,6 +7,17 @@ test("runs the planning loop from direction to export", async ({ page }) => {
   const blockNote = `E2E focus block ${suffix}`;
   const reviewWin = `E2E review win ${suffix}`;
 
+  await page.goto("/settings");
+  const databaseSwitch = page.getByRole("switch", {
+    name: "Use test database"
+  });
+
+  if (!(await databaseSwitch.isChecked())) {
+    await page.getByText("Use test database", { exact: true }).click();
+  }
+
+  await expect(databaseSwitch).toBeChecked();
+
   await page.goto("/goals");
   await expect(
     page.getByRole("heading", { name: "Goals & Learning" })

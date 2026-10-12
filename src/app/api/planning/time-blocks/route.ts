@@ -21,7 +21,7 @@ const updateTimeBlockSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = createTimeBlockSchema.parse(await request.json());
-    const { useCases } = await getPlanningRuntime();
+    const { useCases } = await getPlanningRuntime(request);
     const timeBlock = await useCases.scheduleTimeBlock({
       id: randomUUID(),
       ...body
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = updateTimeBlockSchema.parse(await request.json());
-    const { useCases } = await getPlanningRuntime();
+    const { useCases } = await getPlanningRuntime(request);
     const timeBlock = await useCases.recordTimeBlockActual(body);
 
     return Response.json(timeBlock);

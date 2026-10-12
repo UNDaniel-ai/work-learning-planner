@@ -10,7 +10,8 @@ export default defineConfig({
     trace: "on-first-retry"
   },
   webServer: {
-    command: "DATABASE_URL=file:local.db pnpm dev",
+    command:
+      "DATABASE_URL=file:local.db TEST_DATABASE_URL=file:local.e2e.db pnpm dev",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI
   },

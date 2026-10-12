@@ -2,6 +2,11 @@ import { createMemoryTaskProvider } from "../../integrations/memory/provider";
 import { createVikunjaTaskProvider } from "../../integrations/vikunja/provider";
 import { getConfig } from "../config";
 import {
+  getDatabaseModeFromRequest,
+  getDatabaseUrlForMode,
+  type DatabaseMode
+} from "./database-mode";
+import {
   createPlannerDatabase,
   migratePlannerDatabase,
   type PlannerDatabaseConnection
@@ -18,24 +23,46 @@ import type { Area } from "../../domain/planning/types";
 import type { TaskProvider } from "../../domain/tasks/provider";
 
 export type PlannerRuntime = {
+  databaseMode: DatabaseMode;
+  databaseUrl: string;
   connection: PlannerDatabaseConnection;
   repository: PlanningRepository;
   taskProvider: TaskProvider;
   useCases: PlanningUseCases;
 };
 
-let runtimePromise: Promise<PlannerRuntime> | undefined;
+type RuntimeInput = Request | { databaseMode?: DatabaseMode };
 
-export function getPlanningRuntime(): Promise<PlannerRuntime> {
-  runtimePromise ??= createRuntime();
+const runtimePromises = new Map<string, Promise<PlannerRuntime>>();
 
-  return runtimePromise;
+export function getPlanningRuntime(
+  input?: RuntimeInput
+): Promise<PlannerRuntime> {
+  const config = getConfig();
+  const databaseMode = getRuntimeDatabaseMode(input);
+  const databaseUrl = getDatabaseUrlForMode(config, databaseMode);
+  const runtimeKey = `${databaseMode}:${databaseUrl}`;
+
+  if (!runtimePromises.has(runtimeKey)) {
+    runtimePromises.set(
+      runtimeKey,
+      createRuntime({
+        databaseMode,
+        databaseUrl
+      })
+    );
+  }
+
+  return runtimePromises.get(runtimeKey) as Promise<PlannerRuntime>;
 }
 
-async function createRuntime(): Promise<PlannerRuntime> {
+async function createRuntime(input: {
+  databaseMode: DatabaseMode;
+  databaseUrl: string;
+}): Promise<PlannerRuntime> {
   const config = getConfig();
   const connection = createPlannerDatabase({
-    url: config.databaseUrl,
+    url: input.databaseUrl,
     authToken: undefined
   });
 
@@ -53,6 +80,8 @@ async function createRuntime(): Promise<PlannerRuntime> {
       : createMemoryTaskProvider();
 
   return {
+    databaseMode: input.databaseMode,
+    databaseUrl: input.databaseUrl,
     connection,
     repository,
     taskProvider,
@@ -61,6 +90,22 @@ async function createRuntime(): Promise<PlannerRuntime> {
       taskProvider
     })
   };
+}
+
+function getRuntimeDatabaseMode(input?: RuntimeInput): DatabaseMode {
+  if (!input) {
+    return "personal";
+  }
+
+  if (isRequestInput(input)) {
+    return getDatabaseModeFromRequest(input);
+  }
+
+  return input.databaseMode ?? "personal";
+}
+
+function isRequestInput(input: RuntimeInput): input is Request {
+  return "headers" in input;
 }
 
 async function ensureDefaultAreas(repository: PlanningRepository): Promise<void> {

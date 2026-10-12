@@ -7,6 +7,7 @@
 - API tests call route handlers directly with mocked runtime boundaries.
 - Component tests use Testing Library and stub `fetch` at the browser/server boundary.
 - `e2e/mvp.spec.ts` covers the main browser path: goals and learning, weekly planning, Today execution, Review, and JSON export.
+- The e2e path switches Settings to the test database before creating data, so regression runs do not write to the personal planning database.
 
 ## TDD Loop
 
@@ -29,6 +30,8 @@ pnpm e2e
 ```
 
 The local e2e configuration uses the installed Google Chrome channel. In CI, `PLAYWRIGHT` uses its managed Chromium channel through `CI=true`.
+
+Playwright starts the dev server with `DATABASE_URL=file:local.db` and `TEST_DATABASE_URL=file:local.e2e.db` when it owns the server. If an existing local server is reused, the app can still derive `file:local.test.db` from `DATABASE_URL`.
 
 ## External Services
 

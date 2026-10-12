@@ -2,9 +2,9 @@ import { z } from "zod";
 import { errorResponse } from "../http";
 import { getPlanningRuntime } from "../../../../lib/planning/runtime";
 
-export async function GET() {
+export async function GET(request?: Request) {
   try {
-    const { taskProvider } = await getPlanningRuntime();
+    const { taskProvider } = await getPlanningRuntime(request);
 
     return Response.json({
       tasks: await taskProvider.listTasks({ status: "open" })
@@ -23,7 +23,7 @@ const updateTaskSchema = z.object({
 export async function PATCH(request: Request) {
   try {
     const body = updateTaskSchema.parse(await request.json());
-    const { taskProvider } = await getPlanningRuntime();
+    const { taskProvider } = await getPlanningRuntime(request);
 
     if (body.action === "complete") {
       return Response.json(await taskProvider.completeTask(body.id));

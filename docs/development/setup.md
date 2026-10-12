@@ -18,9 +18,12 @@ For a local-only run, set the database URL in `.env`:
 
 ```bash
 DATABASE_URL=file:local.db
+TEST_DATABASE_URL=file:local.test.db
 ```
 
 Add `VIKUNJA_BASE_URL` and `VIKUNJA_API_TOKEN` only when a Vikunja instance is available. Do not commit `.env`, tokens, or the local database.
+
+`TEST_DATABASE_URL` is optional for local SQLite URLs. When it is omitted, the app derives a sibling test database such as `file:local.test.db` from `DATABASE_URL`.
 
 ## Run
 
@@ -30,7 +33,7 @@ pnpm dev --hostname 127.0.0.1 --port 3000
 
 Open <http://127.0.0.1:3000/today>.
 
-The Settings page can test the server-side Vikunja connection and download a JSON export of local planning data. The export does not include environment variables or API tokens.
+The Settings page can test the server-side Vikunja connection, switch between the personal and test planning databases, and download a JSON export of the active database. The export does not include environment variables or API tokens.
 
 ## Quality Checks
 

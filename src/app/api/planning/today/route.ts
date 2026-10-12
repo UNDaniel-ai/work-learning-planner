@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const date = dateSchema.parse(
       url.searchParams.get("date") ?? new Date().toISOString().slice(0, 10)
     );
-    const { repository, taskProvider } = await getPlanningRuntime();
+    const { repository, taskProvider } = await getPlanningRuntime(request);
     const planningPeriods = await repository.listPlanningPeriods();
     const planningPeriod =
       planningPeriods.find(

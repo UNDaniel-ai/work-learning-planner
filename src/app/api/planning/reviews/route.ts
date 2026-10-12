@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       throw new Error("periodId is required.");
     }
 
-    const { repository } = await getPlanningRuntime();
+    const { repository } = await getPlanningRuntime(request);
 
     return Response.json({
       reviews: await repository.listReviewsForPeriod(periodId)
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = reviewSchema.parse(await request.json());
-    const { useCases } = await getPlanningRuntime();
+    const { useCases } = await getPlanningRuntime(request);
     const review = await useCases.recordReview({
       id: randomUUID(),
       ...body
