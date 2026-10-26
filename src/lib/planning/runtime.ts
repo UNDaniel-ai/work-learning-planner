@@ -31,7 +31,7 @@ export type PlannerRuntime = {
   useCases: PlanningUseCases;
 };
 
-type RuntimeInput = Request | { databaseMode?: DatabaseMode };
+export type RuntimeInput = Request | { databaseMode?: DatabaseMode };
 
 const runtimePromises = new Map<string, Promise<PlannerRuntime>>();
 

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PlanningPeriod, TimeBlock } from "../domain/planning/types";
+import type { LearningModule, StudySession } from "../domain/learning/types";
 import type { PlannerTask } from "../domain/tasks/provider";
 import { TodayWorkspace } from "./today-workspace";
 
@@ -32,6 +33,32 @@ const block: TimeBlock = {
   note: "Focused implementation"
 };
 
+const learningModule: LearningModule = {
+  id: "module-attention",
+  trackId: "track-cs336",
+  title: "Attention and RoPE",
+  sequence: 5,
+  status: "active",
+  expectedOutcome: "Explain causal masking and output shapes.",
+  acceptanceCriteria: ["Pass a toy tensor check."],
+  markdownPath: "learning/cs336/modules/05-attention-and-rope.md",
+  createdAt: "2026-10-09T08:00:00.000Z",
+  updatedAt: "2026-10-09T08:00:00.000Z"
+};
+
+const learningSession: StudySession = {
+  id: "session-attention",
+  moduleId: learningModule.id,
+  planningPeriodId: period.id,
+  timeBlockId: block.id,
+  status: "active",
+  question: "Where should the causal mask be applied?",
+  preUnderstanding: "Before softmax, I think.",
+  markdownPath: "learning/cs336/sessions/2026-10-09-attention.md",
+  createdAt: "2026-10-09T09:00:00.000Z",
+  updatedAt: "2026-10-09T09:00:00.000Z"
+};
+
 afterEach(() => {
   vi.unstubAllGlobals();
 });
@@ -46,7 +73,10 @@ describe("TodayWorkspace", () => {
           date: "2026-10-09",
           planningPeriod: period,
           timeBlocks: [block],
-          tasks: [task]
+          tasks: [task],
+          learningSessions: [
+            { session: learningSession, module: learningModule }
+          ]
         })
       )
       .mockResolvedValueOnce(jsonResponse({ ...block, actualMinutes: 45 }))
@@ -60,6 +90,13 @@ describe("TodayWorkspace", () => {
 
     expect(await screen.findByText("Draft weekly plan")).toBeVisible();
     expect(screen.getByText("Focused implementation")).toBeVisible();
+    expect(screen.getByText("Attention and RoPE")).toBeVisible();
+    expect(
+      screen.getByText("Where should the causal mask be applied?")
+    ).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: "Continue learning session" })
+    ).toHaveAttribute("href", "/learning/sessions/session-attention");
 
     fireEvent.change(screen.getByLabelText("Actual minutes for Focused implementation"), {
       target: { value: "45" }

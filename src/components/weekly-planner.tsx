@@ -2,6 +2,7 @@
 
 import { CalendarDays, Target } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import type { LearningSessionSummary } from "../domain/learning/types";
 import type { Goal, PlanningPeriod, TimeBlock } from "../domain/planning/types";
 import type { PlannerTask } from "../domain/tasks/provider";
 import { TaskList } from "./task-list";
@@ -9,6 +10,7 @@ import {
   TimeBlockGrid,
   type CreateTimeBlockFormInput
 } from "./time-block-grid";
+import { LearningSessionSummaryList } from "./learning-session-summary-list";
 
 type GoalsResponse = {
   goals: Goal[];
@@ -21,6 +23,7 @@ type TasksResponse = {
 type WeeklyResponse = {
   planningPeriods: PlanningPeriod[];
   timeBlocks: TimeBlock[];
+  learningSessions: LearningSessionSummary[];
 };
 
 type WeeklyPlannerProps = {
@@ -32,6 +35,9 @@ export function WeeklyPlanner({ anchorDate = getTodayDate() }: WeeklyPlannerProp
   const [tasks, setTasks] = useState<PlannerTask[]>([]);
   const [planningPeriods, setPlanningPeriods] = useState<PlanningPeriod[]>([]);
   const [timeBlocks, setTimeBlocks] = useState<TimeBlock[]>([]);
+  const [learningSessions, setLearningSessions] = useState<
+    LearningSessionSummary[]
+  >([]);
   const [selectedGoalIds, setSelectedGoalIds] = useState<string[]>([]);
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +58,11 @@ export function WeeklyPlanner({ anchorDate = getTodayDate() }: WeeklyPlannerProp
     (total, block) => total + block.durationMinutes,
     0
   );
+  const currentLearningSessions = currentPeriod
+    ? learningSessions.filter(
+        ({ session }) => session.planningPeriodId === currentPeriod.id
+      )
+    : [];
 
   useEffect(() => {
     let isActive = true;
@@ -76,6 +87,7 @@ export function WeeklyPlanner({ anchorDate = getTodayDate() }: WeeklyPlannerProp
         setTasks(taskData.tasks);
         setPlanningPeriods(weeklyData.planningPeriods);
         setTimeBlocks(weeklyData.timeBlocks);
+        setLearningSessions(weeklyData.learningSessions ?? []);
         setSelectedGoalIds(loadedPeriod?.focusGoalIds ?? []);
         setError(undefined);
       } catch (loadError) {
@@ -260,6 +272,23 @@ export function WeeklyPlanner({ anchorDate = getTodayDate() }: WeeklyPlannerProp
             Save a weekly plan before adding time blocks.
           </p>
         )}
+      </section>
+
+      <section aria-labelledby="weekly-learning-heading" className="space-y-3">
+        <div>
+          <p className="text-xs font-medium text-stone-500">Learning plan</p>
+          <h2
+            className="mt-1 text-lg font-semibold text-stone-950"
+            id="weekly-learning-heading"
+          >
+            Learning sessions
+          </h2>
+        </div>
+        <LearningSessionSummaryList
+          emptyMessage="No learning sessions are linked to this week."
+          linkLabel="Open learning session"
+          sessions={currentLearningSessions}
+        />
       </section>
     </div>
   );

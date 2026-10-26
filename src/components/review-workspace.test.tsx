@@ -36,16 +36,95 @@ describe("ReviewWorkspace", () => {
       .mockResolvedValueOnce(
         jsonResponse({
           planningPeriods: [period],
-          timeBlocks: []
+          timeBlocks: [],
+          learningSessions: []
         })
       )
-      .mockResolvedValueOnce(jsonResponse({ reviews: [] }))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          reviews: [],
+          learning: {
+            sessions: [
+              {
+                session: {
+                  id: "session-attention",
+                  moduleId: "module-attention",
+                  planningPeriodId: period.id,
+                  status: "blocked",
+                  question: "Where should the causal mask be applied?",
+                  preUnderstanding: "Before softmax, I think.",
+                  blocker: "The mask order is still unclear.",
+                  createdAt: "2026-10-09T09:00:00.000Z",
+                  updatedAt: "2026-10-09T09:30:00.000Z"
+                },
+                module: {
+                  id: "module-attention",
+                  trackId: "track-cs336",
+                  title: "Attention and RoPE",
+                  sequence: 5,
+                  status: "blocked",
+                  expectedOutcome: "Explain causal masking.",
+                  acceptanceCriteria: ["Pass a toy tensor check."],
+                  createdAt: "2026-10-09T08:00:00.000Z",
+                  updatedAt: "2026-10-09T08:00:00.000Z"
+                }
+              }
+            ],
+            evidence: [
+              {
+                id: "evidence-mask",
+                sessionId: "session-attention",
+                kind: "toy_example",
+                title: "Two-token causal mask",
+                summary: "The future token receives a masked logit.",
+                reference: "tests/test_attention.py::test_causal_mask",
+                result: "fail",
+                createdAt: "2026-10-09T09:20:00.000Z"
+              }
+            ],
+            knowledgeCards: [
+              {
+                id: "card-attention",
+                trackId: "track-cs336",
+                moduleId: "module-attention",
+                title: "Scaled dot-product attention",
+                slug: "scaled-dot-product-attention",
+                sourceIds: ["source-cs336"],
+                evidenceIds: ["evidence-mask"],
+                relatedCardIds: [],
+                maturity: "observed",
+                confidence: 3,
+                summary: "Apply the mask before softmax.",
+                createdAt: "2026-10-09T09:40:00.000Z",
+                updatedAt: "2026-10-09T09:40:00.000Z"
+              }
+            ],
+            blockedQuestions: [
+              {
+                sessionId: "session-attention",
+                moduleId: "module-attention",
+                moduleTitle: "Attention and RoPE",
+                question: "Where should the causal mask be applied?",
+                blocker: "The mask order is still unclear."
+              }
+            ]
+          }
+        })
+      )
       .mockResolvedValueOnce(jsonResponse(review, 201));
     vi.stubGlobal("fetch", fetchMock);
 
     render(<ReviewWorkspace date="2026-10-09" />);
 
     expect(await screen.findByText("Close the loop")).toBeVisible();
+    expect(screen.getByText("Learning outcomes")).toBeVisible();
+    expect(screen.getByText("1 session")).toBeVisible();
+    expect(screen.getByText("1 evidence item")).toBeVisible();
+    expect(screen.getByText("1 knowledge card")).toBeVisible();
+    expect(
+      screen.getByText("Where should the causal mask be applied?")
+    ).toBeVisible();
+    expect(screen.getByText("The mask order is still unclear.")).toBeVisible();
     fireEvent.change(screen.getByLabelText("Wins"), {
       target: { value: "Shipped a slice" }
     });

@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { errorResponse } from "../http";
 import { getPlanningRuntime } from "../../../../lib/planning/runtime";
+import { getLearningRuntime } from "../../../../lib/learning/runtime";
 
 const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const reviewSchema = z.object({
@@ -22,10 +23,15 @@ export async function GET(request: Request) {
       throw new Error("periodId is required.");
     }
 
-    const { repository } = await getPlanningRuntime(request);
+    const [{ repository }, learningRuntime] = await Promise.all([
+      getPlanningRuntime(request),
+      getLearningRuntime(request)
+    ]);
 
     return Response.json({
-      reviews: await repository.listReviewsForPeriod(periodId)
+      reviews: await repository.listReviewsForPeriod(periodId),
+      learning:
+        await learningRuntime.repository.getPeriodLearningSummary(periodId)
     });
   } catch (error) {
     return errorResponse(error);

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import type { LearningPeriodSummary } from "../domain/learning/types";
 import type {
   PlanningPeriod,
   Review
@@ -16,6 +18,7 @@ type WeeklyResponse = {
 
 type ReviewsResponse = {
   reviews: Review[];
+  learning: LearningPeriodSummary;
 };
 
 type ReviewWorkspaceProps = {
@@ -25,6 +28,9 @@ type ReviewWorkspaceProps = {
 export function ReviewWorkspace({ date }: ReviewWorkspaceProps) {
   const [periods, setPeriods] = useState<PlanningPeriod[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [learning, setLearning] = useState<LearningPeriodSummary>(
+    emptyLearningSummary()
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>();
 
@@ -51,7 +57,7 @@ export function ReviewWorkspace({ date }: ReviewWorkspaceProps) {
                 loadedPeriod.id
               )}`
             )
-          : { reviews: [] };
+          : { reviews: [], learning: emptyLearningSummary() };
 
         if (!isActive) {
           return;
@@ -59,6 +65,7 @@ export function ReviewWorkspace({ date }: ReviewWorkspaceProps) {
 
         setPeriods(weeklyData.planningPeriods);
         setReviews(reviewData.reviews);
+        setLearning(reviewData.learning ?? emptyLearningSummary());
         setError(undefined);
       } catch (loadError) {
         if (isActive) {
@@ -187,6 +194,79 @@ export function ReviewWorkspace({ date }: ReviewWorkspaceProps) {
           </section>
         </div>
       )}
+
+      {currentPeriod ? (
+        <section
+          aria-labelledby="learning-outcomes-heading"
+          className="space-y-4 border-t border-stone-200 pt-5"
+        >
+          <div>
+            <p className="text-xs font-medium text-stone-500">
+              Learning review
+            </p>
+            <h2
+              className="mt-1 text-xl font-semibold text-stone-950"
+              id="learning-outcomes-heading"
+            >
+              Learning outcomes
+            </h2>
+          </div>
+
+          <div className="grid border-y border-stone-200 bg-white/60 sm:grid-cols-3">
+            <LearningMetric
+              label={formatCount(learning.sessions.length, "session")}
+            />
+            <LearningMetric
+              label={formatCount(learning.evidence.length, "evidence item")}
+            />
+            <LearningMetric
+              label={formatCount(
+                learning.knowledgeCards.length,
+                "knowledge card"
+              )}
+            />
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-stone-950">
+              Blocked questions
+            </h3>
+            {learning.blockedQuestions.length > 0 ? (
+              <ul className="mt-2 divide-y divide-stone-200 border border-stone-200 bg-white/60">
+                {learning.blockedQuestions.map((item) => (
+                  <li className="space-y-2 px-4 py-4" key={item.sessionId}>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-amber-700">
+                          {item.moduleTitle}
+                        </p>
+                        <p className="mt-1 break-words text-sm font-medium text-stone-950">
+                          {item.question}
+                        </p>
+                        {item.blocker ? (
+                          <p className="mt-1 break-words text-sm text-stone-600">
+                            {item.blocker}
+                          </p>
+                        ) : null}
+                      </div>
+                      <Link
+                        className="shrink-0 text-sm font-medium text-teal-700 hover:text-teal-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+                        href={`/learning/sessions/${item.sessionId}`}
+                      >
+                        Open session
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-2 border border-dashed border-stone-300 px-4 py-5 text-sm text-stone-500">
+                No blocked learning questions for this period.
+              </p>
+            )}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
@@ -231,4 +311,25 @@ function formatVariance(minutes: number): string {
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Review failed to load.";
+}
+
+function emptyLearningSummary(): LearningPeriodSummary {
+  return {
+    sessions: [],
+    evidence: [],
+    knowledgeCards: [],
+    blockedQuestions: []
+  };
+}
+
+function LearningMetric({ label }: { label: string }) {
+  return (
+    <p className="border-b border-stone-200 px-5 py-4 text-sm font-medium text-stone-950 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+      {label}
+    </p>
+  );
+}
+
+function formatCount(count: number, noun: string): string {
+  return `${count} ${noun}${count === 1 ? "" : "s"}`;
 }

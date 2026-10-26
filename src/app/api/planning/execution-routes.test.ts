@@ -5,6 +5,12 @@ import type {
   TaskLink,
   TimeBlock
 } from "../../../domain/planning/types";
+import type {
+  EvidenceItem,
+  KnowledgeCard,
+  LearningModule,
+  StudySession
+} from "../../../domain/learning/types";
 import type { PlannerTask } from "../../../domain/tasks/provider";
 import { GET as getToday } from "./today/route";
 import {
@@ -13,6 +19,7 @@ import {
 } from "./reviews/route";
 import { PATCH as patchTask } from "./tasks/route";
 import { PATCH as patchTimeBlock } from "./time-blocks/route";
+import { GET as getWeekly } from "./weekly/route";
 
 const mocks = vi.hoisted(() => {
   const period: PlanningPeriod = {
@@ -60,6 +67,85 @@ const mocks = vi.hoisted(() => {
     varianceMinutes: -15,
     createdAt: "2026-10-09T18:00:00.000Z"
   };
+  const learningModule: LearningModule = {
+    id: "module-attention",
+    trackId: "track-cs336",
+    title: "Attention and RoPE",
+    sequence: 5,
+    status: "active",
+    expectedOutcome: "Explain causal masking and output shapes.",
+    acceptanceCriteria: ["Pass a toy tensor check."],
+    markdownPath: "learning/cs336/modules/05-attention-and-rope.md",
+    createdAt: "2026-10-09T08:00:00.000Z",
+    updatedAt: "2026-10-09T08:00:00.000Z"
+  };
+  const learningSession: StudySession = {
+    id: "session-attention",
+    moduleId: learningModule.id,
+    planningPeriodId: period.id,
+    timeBlockId: timeBlock.id,
+    status: "active",
+    question: "Where should the causal mask be applied?",
+    preUnderstanding: "Before softmax, I think.",
+    markdownPath: "learning/cs336/sessions/2026-10-09-attention.md",
+    createdAt: "2026-10-09T09:00:00.000Z",
+    updatedAt: "2026-10-09T09:00:00.000Z"
+  };
+  const blockedSession: StudySession = {
+    ...learningSession,
+    id: "session-rope",
+    timeBlockId: undefined,
+    status: "blocked",
+    question: "Why are frequencies paired across dimensions?",
+    blocker: "The rotation layout is still unclear.",
+    createdAt: "2026-10-10T09:00:00.000Z",
+    updatedAt: "2026-10-10T09:30:00.000Z"
+  };
+  const evidence: EvidenceItem = {
+    id: "evidence-mask",
+    sessionId: learningSession.id,
+    kind: "toy_example",
+    title: "Two-token causal mask",
+    summary: "The future token receives a masked logit.",
+    reference: "tests/test_attention.py::test_causal_mask",
+    result: "pass",
+    markdownPath: "learning/cs336/experiments/attention-mask.md",
+    createdAt: "2026-10-09T09:30:00.000Z"
+  };
+  const knowledgeCard: KnowledgeCard = {
+    id: "card-attention",
+    trackId: learningModule.trackId,
+    moduleId: learningModule.id,
+    title: "Scaled dot-product attention",
+    slug: "scaled-dot-product-attention",
+    sourceIds: ["source-cs336"],
+    evidenceIds: [evidence.id],
+    relatedCardIds: [],
+    maturity: "verified",
+    confidence: 4,
+    summary: "Apply the causal mask before softmax.",
+    markdownPath: "learning/cs336/knowledge/scaled-dot-product-attention.md",
+    createdAt: "2026-10-09T10:00:00.000Z",
+    updatedAt: "2026-10-09T10:00:00.000Z"
+  };
+  const learningSessions = [
+    { session: learningSession, module: learningModule },
+    { session: blockedSession, module: learningModule }
+  ];
+  const learning = {
+    sessions: learningSessions,
+    evidence: [evidence],
+    knowledgeCards: [knowledgeCard],
+    blockedQuestions: [
+      {
+        sessionId: blockedSession.id,
+        moduleId: learningModule.id,
+        moduleTitle: learningModule.title,
+        question: blockedSession.question,
+        blocker: blockedSession.blocker
+      }
+    ]
+  };
 
   return {
     period,
@@ -67,6 +153,13 @@ const mocks = vi.hoisted(() => {
     taskLink,
     task,
     review,
+    learningModule,
+    learningSession,
+    blockedSession,
+    evidence,
+    knowledgeCard,
+    learningSessions,
+    learning,
     repository: {
       listPlanningPeriods: vi.fn(async () => [period]),
       listTimeBlocks: vi.fn(async () => [timeBlock]),
@@ -84,6 +177,29 @@ const mocks = vi.hoisted(() => {
         ...task,
         dueDate
       }))
+    },
+    learningRepository: {
+      listSessionSummaries: vi.fn(async (filter?: {
+        planningPeriodId?: string;
+        timeBlockIds?: string[];
+      }) => {
+        if (filter?.timeBlockIds) {
+          return learningSessions.filter(({ session }) =>
+            session.timeBlockId
+              ? filter.timeBlockIds?.includes(session.timeBlockId)
+              : false
+          );
+        }
+
+        if (filter?.planningPeriodId) {
+          return learningSessions.filter(
+            ({ session }) => session.planningPeriodId === filter.planningPeriodId
+          );
+        }
+
+        return learningSessions;
+      }),
+      getPeriodLearningSummary: vi.fn(async () => learning)
     }
   };
 });
@@ -93,6 +209,12 @@ vi.mock("../../../lib/planning/runtime", () => ({
     repository: mocks.repository,
     useCases: mocks.useCases,
     taskProvider: mocks.taskProvider
+  }))
+}));
+
+vi.mock("../../../lib/learning/runtime", () => ({
+  getLearningRuntime: vi.fn(async () => ({
+    repository: mocks.learningRepository
   }))
 }));
 
@@ -109,7 +231,34 @@ describe("planning execution API routes", () => {
       date: "2026-10-09",
       planningPeriod: mocks.period,
       timeBlocks: [mocks.timeBlock],
-      tasks: [mocks.task]
+      tasks: [mocks.task],
+      learningSessions: [
+        {
+          session: mocks.learningSession,
+          module: mocks.learningModule
+        }
+      ]
+    });
+  });
+
+  it("loads weekly learning sessions and period review outputs", async () => {
+    await expect((await getWeekly()).json()).resolves.toEqual({
+      planningPeriods: [mocks.period],
+      timeBlocks: [mocks.timeBlock],
+      learningSessions: mocks.learningSessions
+    });
+
+    await expect(
+      (
+        await getReviews(
+          new Request(
+            "http://localhost/api/planning/reviews?periodId=period-1"
+          )
+        )
+      ).json()
+    ).resolves.toEqual({
+      reviews: [mocks.review],
+      learning: mocks.learning
     });
   });
 
@@ -185,7 +334,8 @@ describe("planning execution API routes", () => {
         "http://localhost/api/planning/reviews?periodId=period-1"
       )
     )).json()).resolves.toEqual({
-      reviews: [mocks.review]
+      reviews: [mocks.review],
+      learning: mocks.learning
     });
   });
 });

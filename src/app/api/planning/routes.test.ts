@@ -82,6 +82,9 @@ const mocks = vi.hoisted(() => {
     },
     taskProvider: {
       listTasks: vi.fn(async () => [task])
+    },
+    learningRepository: {
+      listSessionSummaries: vi.fn(async () => [])
     }
   };
 });
@@ -91,6 +94,12 @@ vi.mock("../../../lib/planning/runtime", () => ({
     repository: mocks.repository,
     useCases: mocks.useCases,
     taskProvider: mocks.taskProvider
+  }))
+}));
+
+vi.mock("../../../lib/learning/runtime", () => ({
+  getLearningRuntime: vi.fn(async () => ({
+    repository: mocks.learningRepository
   }))
 }));
 
@@ -158,7 +167,8 @@ describe("planning API routes", () => {
     });
     await expect((await getWeekly()).json()).resolves.toEqual({
       planningPeriods: [mocks.period],
-      timeBlocks: [mocks.timeBlock]
+      timeBlocks: [mocks.timeBlock],
+      learningSessions: []
     });
     await expect((await getTasks()).json()).resolves.toEqual({
       tasks: [mocks.task]

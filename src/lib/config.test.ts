@@ -24,12 +24,14 @@ describe("app config", () => {
     vi.stubEnv("TEST_DATABASE_URL", "file:./data/e2e.sqlite");
     vi.stubEnv("VIKUNJA_BASE_URL", "https://vikunja.example.test");
     vi.stubEnv("VIKUNJA_API_TOKEN", "test-token");
+    vi.stubEnv("LEARNING_ASSETS_DIR", "temp/e2e-learning-assets");
 
     const getConfig = await loadConfig();
 
     expect(getConfig()).toEqual({
       databaseUrl: "file:./data/test.sqlite",
       testDatabaseUrl: "file:./data/e2e.sqlite",
+      learningAssetsDirectory: "temp/e2e-learning-assets",
       vikunja: {
         baseUrl: "https://vikunja.example.test",
         apiToken: "test-token"
@@ -45,7 +47,8 @@ describe("app config", () => {
 
     expect(getConfig()).toMatchObject({
       databaseUrl: "file:local.db",
-      testDatabaseUrl: "file:local.test.db"
+      testDatabaseUrl: "file:local.test.db",
+      learningAssetsDirectory: "learning"
     });
   });
 });

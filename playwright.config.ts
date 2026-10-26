@@ -2,18 +2,20 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: true,
+  fullyParallel: false,
+  workers: 1,
+  timeout: 90_000,
   reporter: "list",
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: "http://localhost:3100",
     channel: process.env.CI ? undefined : "chrome",
     trace: "on-first-retry"
   },
   webServer: {
     command:
-      "DATABASE_URL=file:local.db TEST_DATABASE_URL=file:local.e2e.db pnpm dev",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI
+      "DATABASE_URL=file:local.db TEST_DATABASE_URL=file:local.e2e.db LEARNING_ASSETS_DIR=temp/e2e-learning-assets pnpm dev --port 3100",
+    url: "http://localhost:3100",
+    reuseExistingServer: false
   },
   projects: [
     {

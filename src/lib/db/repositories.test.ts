@@ -125,7 +125,17 @@ describe("planning repository", () => {
       timeBlocks: [timeBlock],
       reviews: [review],
       taskLinks: [taskLink],
-      syncCursors: []
+      syncCursors: [],
+      learning: {
+        sources: [],
+        tracks: [],
+        modules: [],
+        sessions: [],
+        evidence: [],
+        knowledgeCards: [],
+        reviewItems: [],
+        coachEvents: []
+      }
     });
   });
 

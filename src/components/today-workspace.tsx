@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import type { LearningSessionSummary } from "../domain/learning/types";
 import type { PlanningPeriod, TimeBlock } from "../domain/planning/types";
 import type { PlannerTask } from "../domain/tasks/provider";
 import { MetricBand } from "./page-layout";
 import { TaskExecutionList } from "./task-execution-list";
 import { TimeBlockGrid } from "./time-block-grid";
+import { LearningSessionSummaryList } from "./learning-session-summary-list";
 
 type TodayResponse = {
   date: string;
   planningPeriod: PlanningPeriod | null;
   timeBlocks: TimeBlock[];
   tasks: PlannerTask[];
+  learningSessions: LearningSessionSummary[];
 };
 
 type TodayWorkspaceProps = {
@@ -23,6 +26,9 @@ export function TodayWorkspace({ date }: TodayWorkspaceProps) {
   const [timeBlocks, setTimeBlocks] = useState<TimeBlock[]>([]);
   const [planningPeriod, setPlanningPeriod] =
     useState<PlanningPeriod | null>(null);
+  const [learningSessions, setLearningSessions] = useState<
+    LearningSessionSummary[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>();
 
@@ -50,6 +56,7 @@ export function TodayWorkspace({ date }: TodayWorkspaceProps) {
         setTasks(data.tasks);
         setTimeBlocks(data.timeBlocks);
         setPlanningPeriod(data.planningPeriod);
+        setLearningSessions(data.learningSessions ?? []);
         setError(undefined);
       } catch (loadError) {
         if (isActive) {
@@ -178,6 +185,23 @@ export function TodayWorkspace({ date }: TodayWorkspaceProps) {
           tasks={tasks}
           onCompleteTask={completeTask}
           onPostponeTask={postponeTask}
+        />
+      </section>
+
+      <section aria-labelledby="today-learning-heading" className="space-y-3">
+        <div>
+          <p className="text-xs font-medium text-stone-500">Learning</p>
+          <h2
+            className="mt-1 text-xl font-semibold text-stone-950"
+            id="today-learning-heading"
+          >
+            Study sessions
+          </h2>
+        </div>
+        <LearningSessionSummaryList
+          emptyMessage="No learning session is linked to today's time blocks."
+          linkLabel="Continue learning session"
+          sessions={learningSessions}
         />
       </section>
     </div>

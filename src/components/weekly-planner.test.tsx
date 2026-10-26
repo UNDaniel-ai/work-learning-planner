@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Goal, PlanningPeriod, TimeBlock } from "../domain/planning/types";
+import type { LearningModule, StudySession } from "../domain/learning/types";
 import type { PlannerTask } from "../domain/tasks/provider";
 import { WeeklyPlanner } from "./weekly-planner";
 
@@ -41,6 +42,31 @@ const timeBlock: TimeBlock = {
   endsAt: "2026-10-07T10:30:00.000Z",
   durationMinutes: 90,
   note: "Focused implementation"
+};
+
+const learningModule: LearningModule = {
+  id: "module-attention",
+  trackId: "track-cs336",
+  title: "Attention and RoPE",
+  sequence: 5,
+  status: "active",
+  expectedOutcome: "Explain causal masking and output shapes.",
+  acceptanceCriteria: ["Pass a toy tensor check."],
+  markdownPath: "learning/cs336/modules/05-attention-and-rope.md",
+  createdAt: "2026-10-07T08:00:00.000Z",
+  updatedAt: "2026-10-07T08:00:00.000Z"
+};
+
+const learningSession: StudySession = {
+  id: "session-attention",
+  moduleId: learningModule.id,
+  planningPeriodId: period.id,
+  status: "active",
+  question: "Where should the causal mask be applied?",
+  preUnderstanding: "Before softmax, I think.",
+  markdownPath: "learning/cs336/sessions/2026-10-07-attention.md",
+  createdAt: "2026-10-07T09:00:00.000Z",
+  updatedAt: "2026-10-07T09:00:00.000Z"
 };
 
 afterEach(() => {
@@ -138,7 +164,13 @@ describe("WeeklyPlanner", () => {
       )
       .mockResolvedValueOnce(jsonResponse({ tasks: [task] }))
       .mockResolvedValueOnce(
-        jsonResponse({ planningPeriods: [period], timeBlocks: [timeBlock] })
+        jsonResponse({
+          planningPeriods: [period],
+          timeBlocks: [timeBlock],
+          learningSessions: [
+            { session: learningSession, module: learningModule }
+          ]
+        })
       );
     vi.stubGlobal("fetch", fetchMock);
 
@@ -148,6 +180,11 @@ describe("WeeklyPlanner", () => {
     expect(screen.getByText("Focused implementation")).toBeVisible();
     expect(screen.getByLabelText("Focus Ship planner MVP")).toBeChecked();
     expect(screen.getByText("1.5h")).toBeVisible();
+    expect(screen.getByText("Learning sessions")).toBeVisible();
+    expect(screen.getByText("Attention and RoPE")).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: "Open learning session" })
+    ).toHaveAttribute("href", "/learning/sessions/session-attention");
   });
 
   it("keeps the saved period selected when an older period is already listed", async () => {

@@ -7,6 +7,7 @@ import {
   CalendarDays,
   CheckCircle2,
   ClipboardCheck,
+  LibraryBig,
   Settings2,
   type LucideIcon
 } from "lucide-react";
@@ -23,6 +24,7 @@ const navItems: NavItem[] = [
   { href: "/today", label: "Today", icon: CheckCircle2 },
   { href: "/weekly", label: "Weekly", icon: CalendarDays },
   { href: "/goals", label: "Goals & Learning", icon: BookOpen },
+  { href: "/learning", label: "Learning", icon: LibraryBig },
   { href: "/review", label: "Review", icon: ClipboardCheck },
   { href: "/settings", label: "Settings", icon: Settings2 }
 ];
@@ -94,7 +96,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               aria-label="Primary mobile"
               className="mt-4 flex gap-2 overflow-x-auto pb-1"
             >
-              {navItems.slice(0, 4).map((item) => (
+              {navItems.filter((item) => item.href !== "/settings").map((item) => (
                 <ShellNavLink
                   compact
                   item={item}

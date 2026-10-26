@@ -13,6 +13,7 @@ const optionalUrl = z.preprocess(
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   TEST_DATABASE_URL: optionalNonEmptyString,
+  LEARNING_ASSETS_DIR: optionalNonEmptyString,
   VIKUNJA_BASE_URL: optionalUrl,
   VIKUNJA_API_TOKEN: optionalNonEmptyString
 });
@@ -20,6 +21,7 @@ const envSchema = z.object({
 export type AppConfig = {
   databaseUrl: string;
   testDatabaseUrl?: string;
+  learningAssetsDirectory: string;
   vikunja: {
     baseUrl?: string;
     apiToken?: string;
@@ -42,6 +44,7 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     testDatabaseUrl:
       parsed.data.TEST_DATABASE_URL ??
       deriveLocalTestDatabaseUrl(parsed.data.DATABASE_URL),
+    learningAssetsDirectory: parsed.data.LEARNING_ASSETS_DIR ?? "learning",
     vikunja: {
       baseUrl: parsed.data.VIKUNJA_BASE_URL,
       apiToken: parsed.data.VIKUNJA_API_TOKEN

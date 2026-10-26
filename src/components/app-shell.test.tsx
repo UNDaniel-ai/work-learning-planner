@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { AppShell } from "./app-shell";
 import GoalsPage from "../app/goals/page";
+import LearningPage from "../app/learning/page";
 import ReviewPage from "../app/review/page";
 import SettingsPage from "../app/settings/page";
 import TodayPage from "../app/today/page";
@@ -33,6 +34,10 @@ describe("AppShell", () => {
     expect(
       within(primaryNav).getByRole("link", { name: /Goals & Learning/i })
     ).toHaveAttribute("href", "/goals");
+    expect(within(primaryNav).getByRole("link", { name: /^Learning$/i })).toHaveAttribute(
+      "href",
+      "/learning"
+    );
     expect(within(primaryNav).getByRole("link", { name: /Review/i })).toHaveAttribute(
       "href",
       "/review"
@@ -54,6 +59,7 @@ describe("AppShell", () => {
       { component: <TodayPage />, heading: "Today" },
       { component: <WeeklyPage />, heading: "Weekly Plan" },
       { component: <GoalsPage />, heading: "Goals & Learning" },
+      { component: <LearningPage />, heading: "Learning" },
       { component: <ReviewPage />, heading: "Review" },
       { component: <SettingsPage />, heading: "Settings" }
     ];

@@ -26,6 +26,7 @@ data/
 *.sqlite3
 
 # Temporary editor and test files
+temp/e2e-learning-assets/
 *.swp
 *.swo
 tmp/

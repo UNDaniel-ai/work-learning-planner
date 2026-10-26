@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { errorResponse } from "../http";
 import { getPlanningRuntime } from "../../../../lib/planning/runtime";
+import { getLearningRuntime } from "../../../../lib/learning/runtime";
 
 const taskSchema = z.object({
   taskLinkId: z.string().min(1),
@@ -21,11 +22,16 @@ const createWeeklyPlanSchema = z.object({
 
 export async function GET(request?: Request) {
   try {
-    const { repository } = await getPlanningRuntime(request);
+    const [{ repository }, learningRuntime] = await Promise.all([
+      getPlanningRuntime(request),
+      getLearningRuntime(request)
+    ]);
 
     return Response.json({
       planningPeriods: await repository.listPlanningPeriods(),
-      timeBlocks: await repository.listTimeBlocks()
+      timeBlocks: await repository.listTimeBlocks(),
+      learningSessions:
+        await learningRuntime.repository.listSessionSummaries()
     });
   } catch (error) {
     return errorResponse(error);

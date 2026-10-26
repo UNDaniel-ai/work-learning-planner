@@ -12,6 +12,10 @@ import type {
 } from "../../domain/planning/types";
 import type { PlannerDatabase } from "./client";
 import {
+  createLearningRepository,
+  type LearningDataExport
+} from "./learning-repositories";
+import {
   areas,
   goals,
   learningTopics,
@@ -43,9 +47,12 @@ export type PlanningDataExport = {
   reviews: Review[];
   taskLinks: TaskLink[];
   syncCursors: SyncCursor[];
+  learning: LearningDataExport;
 };
 
 export function createPlanningRepository(db: PlannerDatabase) {
+  const learningRepository = createLearningRepository(db);
+
   return {
     async createArea(area: Area): Promise<void> {
       await db.insert(areas).values(normalizeOptional(area));
@@ -236,7 +243,8 @@ export function createPlanningRepository(db: PlannerDatabase) {
         timeBlockRows,
         reviewRows,
         taskLinkRows,
-        syncCursorRows
+        syncCursorRows,
+        learningData
       ] = await Promise.all([
         this.listAreas(),
         this.listGoals(),
@@ -245,7 +253,8 @@ export function createPlanningRepository(db: PlannerDatabase) {
         this.listTimeBlocks(),
         this.listReviews(),
         this.listTaskLinks(),
-        this.listSyncCursors()
+        this.listSyncCursors(),
+        learningRepository.exportLearningData()
       ]);
 
       return {
@@ -256,7 +265,8 @@ export function createPlanningRepository(db: PlannerDatabase) {
         timeBlocks: timeBlockRows,
         reviews: reviewRows,
         taskLinks: taskLinkRows,
-        syncCursors: syncCursorRows
+        syncCursors: syncCursorRows,
+        learning: learningData
       };
     }
   };
